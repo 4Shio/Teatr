@@ -33,18 +33,24 @@ title = soup.find(class_='item').find('a').text
 monthstr = string
 monthint = 0
 tabl = pandas.DataFrame
-spectacles = soup.find_all(class_='item')
+spectacless = soup.find_all(class_='item')
 datasp =0
-for spectacle in spectacles:
-    timesp = spectacle.find(class_='time').text
-    tit = spectacle.find('a').text
-    if list(timesp)[3] == 'о':
+for spectaclel in spectacless:
+    timesp = spectaclel.find(class_='time').text
+    tit = spectaclel.find('a').text
+    if list(timesp)[3] =='о'or list(timesp)[2] == 'о':
         monthstr = 'Октябрь'
         monthint = 10
-        print(datasp)
-    if list(timesp)[3]=='н':
+    if list(timesp)[3]=='н' or list(timesp)[2]=='н' and list(timesp)[4]=='о':
         monthstr= 'Ноябрь'
-    day = list(timesp)[0]+join(list(timesp)[1])
+        monthint = 11
+    if list(timesp)[3] =='д'or list(timesp)[2] =='д':
+        monthstr = 'Декабрь'
+        monthint = 12
+    if list(timesp)[3]=='я'or list(timesp)[2]=='я':
+        monthstr= 'Январь'
+        monthint = 1
+    day = list(timesp)[0] + join(list(timesp)[1])
     tabl = ({'day': [day],'month':[monthstr],'monthi':[monthint], 'Spec': [tit]})
     print(tabl)
 
