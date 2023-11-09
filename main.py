@@ -1,16 +1,32 @@
 import datetime
-import telebot
+
 import bs4
 from bs4 import BeautifulSoup
 import requests
-from telebot import types
+
 from datetime import *
 import asyncio
+import aiogram
+from aiogram import*
+from aiogram.filters.command import Command
 now = datetime.now()
 id = [551057845, 1080107997, 6386209825, 402783140]
-bot = telebot.TeleBot('6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
-
+bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 speki ={}
+dp = Dispatcher
+@dp.message(Command("start"))
+async def cmd_start(message: types.Message):
+    await message.answer("Привет от бота",reply_markup=markup)
+
+@dp.message('Следующий спектакль')
+async def comands(message:types.Message):
+    await message.answer("Да")
+
+async def main():
+    await dp.start_polling(bot)
+    await update()
+
+
 async def update():
     while True:
         url = 'https://mrteatr.ru/'
@@ -31,26 +47,13 @@ async def update():
                 pass
         print(speki[0][2])
 
-@bot.message_handler(commands=['start'])
-def start(message):
+
+
+
+if __name__ == "__main__":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn = types.KeyboardButton("Следующий спектакль")
     btn1 = types.KeyboardButton("Список всех следующих спектаклей")
     markup.add(btn, btn1)
-    bot.send_message(message.chat.id, text='Привет от бота', reply_markup=markup)
-
-@bot.message_handler(content_types=['text'])
-def func(message):
-    if (message.text == "Следующий спектакль"):
-        date = datetime.datetime(year=now.year, month=speki[0][2], day=speki[0][0])
-        if (now.day - timedelta(days=2)) == date.day and date.month == now.month:
-            bot.send_message(message.chat.id, text=f'Завта в {speki[0][3]} будет {speki[0][4]}\n Приходить к {speki[0][3]-timedelta(hours=1)}')
-        bot.send_message(message.chat.id, text=f"{speki[0]}")
-    if (message.text == "Список всех следующих спектаклей"):
-        for i in speki:
-            bot.send_message(message.chat.id,text=f'{speki[i]}\n')
-
-async def main():
-    await asyncio.create_task(update())
-asyncio.run(main())
+    asyncio.run(main())
 bot.infinity_polling()
