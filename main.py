@@ -6,21 +6,15 @@ import requests
 from datetime import *
 import asyncio
 import aiogram
-from aiogram import *
 from aiogram import Bot, Dispatcher, Router, types
-from aiogram.enums import ParseMode
-from aiogram.filters import CommandStart
 from aiogram.types import Message
-from aiogram.utils.markdown import hbold
-import numpy as np
+
 
 now = datetime.now()
 id = [551057845, 1080107997, 6386209825, 402783140]
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 speki = {}
 dp = Dispatcher()
-
-
 
 async def command_start(message:Message) -> None:
     await message.answer(f"Привет от бота ")
@@ -30,6 +24,7 @@ async def echo_handler(message: types.Message) -> None:
     global formatted_text
     if message.text == "Следующий спектакль":
         await bot.send_message(chat_id=message.chat.id, text=f"{speki[0]}")
+
 async def update():
 
     url = 'https://mrteatr.ru/'
@@ -46,11 +41,7 @@ async def update():
                 speki[i] = [timesp[0], timesp[1], months[timesp[1]], timesp[3], tit]
             except:
                 pass
-    file = open('Base', 'w')
-    file.write()
-    file.close
 
-    #await asyncio.sleep(1000)
 async def main():
     while True:
         task1 = asyncio.create_task(update())
