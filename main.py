@@ -11,7 +11,6 @@ from aiogram.types import Message
 
 
 now = datetime.now()
-id = [551057845, 1080107997, 6386209825, 402783140]
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 speki = {}
 dp = Dispatcher()
@@ -21,9 +20,12 @@ async def command_start(message:Message) -> None:
 
 @dp.message()
 async def echo_handler(message: types.Message) -> None:
-    global formatted_text
     if message.text == "Следующий спектакль":
-        await bot.send_message(chat_id=message.chat.id, text=f"{speki[0]}")
+        spek = ' '.join(str(i) for i in speki[0])
+        await bot.send_message(chat_id=message.chat.id, text=f"{spek}")
+    if message.text == "Список всех следующих спектаклей":
+        spekt = '\n'.join(' '.join(str(i) for i in v) for v in speki.values())
+        await bot.send_message(chat_id=message.chat.id, text=f"{spekt}")
 
 async def update():
 
@@ -41,6 +43,7 @@ async def update():
                 speki[i] = [timesp[0], timesp[1], months[timesp[1]], timesp[3], tit]
             except:
                 pass
+
 
 async def main():
     while True:
