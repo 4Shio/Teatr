@@ -10,16 +10,25 @@ import aiogram
 import sqlite3
 from aiogram import *
 from aiogram.types import *
-
+chek = False
 now = datetime.now()
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 speki = {}
 # spek = {}
-# global spek =
+link = 0
 dp = Dispatcher()
 connection = sqlite3.connect('my_database.db')
 cursor = connection.cursor()
-
+cursor.execute('''
+            CREATE TABLE IF NOT EXISTS Spektakli (
+            day INTEGER,
+            month TEXT NOT NULL,
+            months INTEGER,
+            time INTEGER,
+            name TEXT NOT NULL,
+            vrem INTEGER
+            )
+            ''')
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
@@ -29,7 +38,6 @@ async def cmd_start(message: types.Message):
     ]
     keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
     await bot.send_message(chat_id=message.chat.id, text="Привет от бота ", reply_markup=keyboard)
-
 
 @dp.message()
 async def echo_handler(message: types.Message) -> None:
@@ -43,17 +51,7 @@ async def echo_handler(message: types.Message) -> None:
 
 
 async def update():
-    cursor.execute('''DROP TABLE IF EXISTS Spektakli ''')
-    cursor.execute('''
-            CREATE TABLE IF NOT EXISTS Spektakli (
-            day INTEGER,
-            month TEXT NOT NULL,
-            months INTEGER,
-            time INTEGER,
-            name TEXT NOT NULL,
-            vrem INTEGER
-            )
-            ''')
+    cursor.execute('DELETE FROM Spektakli')
     url = 'https://mrteatr.ru/'
     page = requests.get(url)
     soup = BeautifulSoup(page.text, "html.parser")
@@ -66,15 +64,24 @@ async def update():
             timesp = el.find(class_='time').text.split()
             tit = el.find('a').text
             speki[i] = [timesp[0], timesp[1], months[timesp[1]], timesp[3], tit]
-            cursor.execute('INSERT INTO Spektakli (day, month, months, time, name) VALUES (?, ?, ?, ?, ? )',
-                           (timesp[0], timesp[1], months[timesp[1]], timesp[3], tit))
-
-        except:
-            pass
-        cursor.execute("SELECT * FROM Spektakli")
-
+            if chek == True:
+                if cursor.execute('''SELECT * FROM Spektakli WHERE name = ?''',(tit,)).fetchone() is not None and \
+                    cursor.execute('''SELECT * FROM Spektakli WHERE month = ?''', (timesp[1],)).fetchone() is not None and\
+                    cursor.execute('''SELECT * FROM Spektakli WHERE day = ?''',(timesp[0],)).fetchone() is not None and \
+                    cursor.execute('''SELECT * FROM Spektakli WHERE time = ?''', (timesp[3],)).fetchone() is not None:
+                    pass
+                else:
+                    cursor.execute('INSERT INTO Spektakli (day, month, months, time, name) VALUES (?, ?, ?, ?, ? )',
+                               (timesp[0], timesp[1], months[timesp[1]], timesp[3], tit))
+                    connection.commit()
+            else:
+                cursor.execute('INSERT INTO Spektakli (day, month, months, time, name) VALUES (?, ?, ?, ?, ? )',
+                               (timesp[0], timesp[1], months[timesp[1]], timesp[3], tit))
+                connection.commit()
+                chek == True
+        except:pass
         connection.commit()
-    await asyncio.sleep(10000)
+    await asyncio.sleep(10)
 
 
 async def main():
