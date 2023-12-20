@@ -10,12 +10,13 @@ import aiogram
 import sqlite3
 from aiogram import *
 from aiogram.types import *
+import logging
+from aiogram.utils.keyboard import *
+builder = ReplyKeyboardBuilder()
 chek = False
 now = datetime.now()
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 speki = {}
-# spek = {}
-link = 0
 dp = Dispatcher()
 connection = sqlite3.connect('my_database.db')
 cursor = connection.cursor()
@@ -30,24 +31,55 @@ cursor.execute('''
             )
             ''')
 
+
+
+def raspisanieq():
+    builder.button(text='Следующий спектакль')
+    builder.button(text='Список всех следующих спектаклей')
+    builder.button(text='Добавить спектакль')
+    builder.button(text='В меню')
+    return builder.as_markup()
+def account():
+    types.ReplyKeyboardRemove
+    builder.button(text='Включить уведомления')
+    builder.button(text='Выключить уведомления')
+    builder.button(text='Редактировать имя')
+    builder.button(text='Удалить аккаунт из базы')
+    builder.button(text='В меню')
+    return  builder.as_markup(resize_keyboard=True)
+
+def menueq():
+    types.ReplyKeyboardRemove
+    builder.button(text='Расписание')
+    builder.button(text='Натройки аккаунта')
+    return  builder.as_markup(resize_keyboard=True)
+
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    kb = [
-        [types.KeyboardButton(text="Следующий спектакль")],
-        [types.KeyboardButton(text="Список всех следующих спектаклей")]
-    ]
-    keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
-    await bot.send_message(chat_id=message.chat.id, text="Привет от бота ", reply_markup=keyboard)
+    await message.answer("Привет от бота", reply_markup=raspisanieq())
+@dp.message(F.text)
+async def message(message:types.Message):
 
-@dp.message()
-async def echo_handler(message: types.Message) -> None:
+    if message.text == "В меню":
+        print(123)
+        await bot.send_message(chat_id=message.chat.id,text='В меню',reply_markup= menueq())
+
+    if message.text == "Расписание":
+        print(321)
+        await bot.send_message(chat_id=message.chat.id,text='Расписание',reply_markup= raspisanieq())
+
     if message.text == "Следующий спектакль":
         cursor.execute("SELECT * FROM Spektakli")
         await bot.send_message(chat_id=message.chat.id, text=' '.join(str(i) for i in cursor.fetchall()[0]))
+
     if message.text == "Список всех следующих спектаклей":
         cursor.execute("SELECT * FROM Spektakli")
-        spekt = '\n'.join(' '.join(str(i) for i in v) for v in cursor.fetchall())
-        await bot.send_message(chat_id=message.chat.id, text=f"{spekt}")
+        await bot.send_message(chat_id=message.chat.id, text='\n'.join(' '.join(str(i) for i in v) for v in cursor.fetchall()))
+
+    if message.text == "Настройки аккаунта":
+        await bot.send_message(chat_id=message.chat.id, text='Перевожу',reply_markup=account())
+
+
 
 
 async def update():
@@ -81,7 +113,7 @@ async def update():
                 chek == True
         except:pass
         connection.commit()
-    await asyncio.sleep(10)
+    await asyncio.sleep(10000)
 
 
 async def main():
