@@ -18,16 +18,14 @@ now = datetime.now()
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 speki = {}
 dp = Dispatcher()
-connection = sqlite3.connect('my_database.db')
+connection = sqlite3.connect('Spectakli.db')
 cursor = connection.cursor()
 cursor.execute('''
             CREATE TABLE IF NOT EXISTS Spektakli (
-            day INTEGER,
-            month TEXT NOT NULL,
-            months INTEGER,
-            time INTEGER,
-            name TEXT NOT NULL,
-            vrem INTEGER
+            date TEXT,
+            time TEXT,
+            name TEXT,
+            info TEXT
             )
             ''')
 
@@ -84,35 +82,33 @@ async def message(message:types.Message):
 
 async def update():
     cursor.execute('DELETE FROM Spektakli')
-    url = 'https://mrteatr.ru/'
+    url = 'https://mrteatr.ru/afisha/'
     page = requests.get(url)
     soup = BeautifulSoup(page.text, "html.parser")
-    spectacless = soup.find_all(class_='item')
+    spectacless = soup.find_all(class_='AffichesItem_item__NUTcg')
     months = {'октября': 10, 'ноября': 11, 'декабря': 12, 'января': 1, 'февраля': 2, 'марта': 3, 'апреля': 4,
               'мая': 5,
               'июня': 6, 'июля': 7, 'сентября': 9}
     for i, el in enumerate(spectacless):
-        try:
-            timesp = el.find(class_='time').text.split()
-            tit = el.find('a').text
-            speki[i] = [timesp[0], timesp[1], months[timesp[1]], timesp[3], tit]
-            if chek == True:
-                if cursor.execute('''SELECT * FROM Spektakli WHERE name = ?''',(tit,)).fetchone() is not None and \
-                    cursor.execute('''SELECT * FROM Spektakli WHERE month = ?''', (timesp[1],)).fetchone() is not None and\
-                    cursor.execute('''SELECT * FROM Spektakli WHERE day = ?''',(timesp[0],)).fetchone() is not None and \
-                    cursor.execute('''SELECT * FROM Spektakli WHERE time = ?''', (timesp[3],)).fetchone() is not None:
-                    pass
-                else:
-                    cursor.execute('INSERT INTO Spektakli (day, month, months, time, name) VALUES (?, ?, ?, ?, ? )',
-                               (timesp[0], timesp[1], months[timesp[1]], timesp[3], tit))
-                    connection.commit()
-            else:
-                cursor.execute('INSERT INTO Spektakli (day, month, months, time, name) VALUES (?, ?, ?, ?, ? )',
-                               (timesp[0], timesp[1], months[timesp[1]], timesp[3], tit))
-                connection.commit()
-                chek == True
-        except:pass
-        connection.commit()
+        #try:
+            # Число и дата
+            datesp = str(el.find(class_='AffichesItem_date__tJDVL').text)
+            print (datesp)
+            #Время
+            timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
+            print (timesp)
+            #Название
+            tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
+            print(tit)
+            #Длительность
+            info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
+            print(info)
+
+            cursor.execute(f'INSERT INTO Spektakli VALUES (?, ?, ?, ? )',(date, timesp, tit, info ))
+            connection.commit()
+
+       # except:pass
+    connection.commit()
     await asyncio.sleep(10000)
 
 
