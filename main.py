@@ -21,10 +21,10 @@ import numpy as np
 from aiogram.utils.keyboard import *
 import pandas as pd
 builder = ReplyKeyboardBuilder()
-chek = False
+
 now = datetime.now()
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
-speki = []
+speki = {}
 dp = Dispatcher()
 
 months = {'октября': 10, 'ноября': 11, 'декабря': 12, 'января': 1, 'февраля': 2, 'марта': 3, 'апреля': 4,
@@ -34,26 +34,24 @@ months = {'октября': 10, 'ноября': 11, 'декабря': 12, 'ян�
 
 
 
-spekti = pd.DataFrame.columns['date', 'name', 'time','antrakt']
+
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     await message.answer("Привет от бота")
 
 pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2" , "https://mrteatr.ru/afisha/?page=3"  , "https://mrteatr.ru/afisha/?page=4" ]
 
+result = ""
 async def update():
-    masbase = []
     for i in pages:
         try:
             page = requests.get(i)
             soup = BeautifulSoup(page.text, "html.parser")
             print(page)
             spectacless = ( soup.find_all(class_='AffichesItem_item__NUTcg'))
-
-
             for iow, el in enumerate(spectacless):
                     try:
-                        masbase.append(el.text)
+
                         #Число и дата
                         datesp = str(el.find(class_='AffichesItem_date__tJDVL').text)
                         #print (datesp)
@@ -66,12 +64,15 @@ async def update():
                         #Длительность
                         info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
                         #print(info)
+                        speki = [date,time,tit,info]
                     except:pass
-            #print('\n'.join(str(i) for i in v) for v in masbase)
-            #print(' '.join(str(i) for i in masbase))
-        except:pass
 
-    print('\n'.join(masbase))
+        except:pass
+    print(speki)
+    speki_pd = pd.DataFrame(columns = ["date","time","name","info"])
+    for i,eli in enumerate(speki):
+        result = spe
+
     await asyncio.sleep(10000)
 
 #async def update2():
