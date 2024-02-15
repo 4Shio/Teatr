@@ -1,6 +1,8 @@
 import datetime
 import bs4
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from aiogram.filters import Command
+from aiogram import types, F
 from bs4 import BeautifulSoup
 import requests
 from datetime import *
@@ -37,16 +39,27 @@ months = {'октября': 10, 'ноября': 11, 'декабря': 12, 'ян�
 
 
 
+def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
+    row = [KeyboardButton(text=item) for item in items]
+    return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True)
+
+
+remove_key = ReplyKeyboardRemove()
 
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer("Привет от бота")
+    await message.answer("Привет от бота",reply_markup=make_row_keyboard(["View"]))
+
+@dp.message(F.text == "View")
+async def view(message:types.Message):
+
+    await message.answer(text = update())
 
 pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2" , "https://mrteatr.ru/afisha/?page=3"  , "https://mrteatr.ru/afisha/?page=4" ]
 
 
-async def update():
+def update():
     for i in pages:
         try:
             page = requests.get(i)
@@ -74,29 +87,19 @@ async def update():
                     except:pass
 
         except:pass
-    #print(speki)s
-    result = " "
-    #speki_pd = pd.DataFrame(columns = ["date","time","name","info"])
-    for i,eli in enumerate(speki["date"]):
-    #    print(speki[0])
-         result = result + " " + speki["date"][i] + " "  + speki["time"][i] + " " + speki["title"][i] + " " + speki["info"][i] + "\n"
     
-    print(result)
-    #print('\n'.join(' '.join(str(i) for i in v) for v in speki.values()))
-    #await asyncio.sleep(10000)
+    result = " "
+    
+    for i,eli in enumerate(speki["date"]):
+         result = result + " " + speki["date"][i] + " "  + speki["time"][i] + " " + speki["title"][i] + " " + speki["info"][i] + "\n"
+
+    return result
+   
 
 
 
 async def main():
-    while True:
-        task1 = asyncio.create_task(update())
-        task2 = asyncio.create_task(dp.start_polling(bot))
-        #task3 = asyncio.create_task(update2())
-        await task1
-        await task2
-        #await task3
-
-
+    await dp.start_polling(bot)
+        
 if __name__ == "__main__":
-    #driver = webdriver.Chrome()
     asyncio.run(main())
