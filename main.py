@@ -33,10 +33,6 @@ speki = {"date":[],
 
 dp = Dispatcher()
 
-months = {'октября': 10, 'ноября': 11, 'декабря': 12, 'января': 1, 'февраля': 2, 'марта': 3, 'апреля': 4,
-                      'мая': 5,
-                      'июня': 6, 'июля': 7, 'сентября': 9}
-
 
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
