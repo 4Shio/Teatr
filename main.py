@@ -24,7 +24,11 @@ builder = ReplyKeyboardBuilder()
 
 now = datetime.now()
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
-speki = {}
+speki = {"date":[],
+        "time":[],
+        "title":[],
+        "info":[]}
+
 dp = Dispatcher()
 
 months = {'октября': 10, 'ноября': 11, 'декабря': 12, 'января': 1, 'февраля': 2, 'марта': 3, 'апреля': 4,
@@ -41,13 +45,12 @@ async def cmd_start(message: types.Message):
 
 pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2" , "https://mrteatr.ru/afisha/?page=3"  , "https://mrteatr.ru/afisha/?page=4" ]
 
-result = ""
+
 async def update():
     for i in pages:
         try:
             page = requests.get(i)
             soup = BeautifulSoup(page.text, "html.parser")
-            print(page)
             spectacless = ( soup.find_all(class_='AffichesItem_item__NUTcg'))
             for iow, el in enumerate(spectacless):
                     try:
@@ -64,29 +67,24 @@ async def update():
                         #Длительность
                         info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
                         #print(info)
-                        speki = [date,time,tit,info]
+                        speki["date"].append(datesp)
+                        speki["time"].append(timesp)
+                        speki["title"].append(tit)
+                        speki["info"].append(info)
                     except:pass
 
         except:pass
-    print(speki)
-    speki_pd = pd.DataFrame(columns = ["date","time","name","info"])
-    for i,eli in enumerate(speki):
-        result = spe
+    #print(speki)s
+    result = " "
+    #speki_pd = pd.DataFrame(columns = ["date","time","name","info"])
+    for i,eli in enumerate(speki["date"]):
+    #    print(speki[0])
+         result = result + " " + speki["date"][i] + " "  + speki["time"][i] + " " + speki["title"][i] + " " + speki["info"][i] + "\n"
+    
+    print(result)
+    #print('\n'.join(' '.join(str(i) for i in v) for v in speki.values()))
+    #await asyncio.sleep(10000)
 
-    await asyncio.sleep(10000)
-
-#async def update2():
-#    spektakli = []
-#    for i in pages:
-#        #try:
-#            url = pages[i]
-#            driver.get(url)
-#            driver.implicitly_wait(10)
-#            spektakli.append( driver.find_elements(By.CLASS_NAME,"AffichesItem_item__NUTcg"))
-#            driver.execute_script("arguments[0].scrollIntoView(true);", spektakli[-1])
-#       #except Exception as niger:
-#       #    print(niger)
-#
 
 
 async def main():
