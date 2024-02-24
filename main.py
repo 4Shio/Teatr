@@ -1,21 +1,15 @@
 import datetime
 import bs4
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from aiogram.filters import Command
-from aiogram import types, F
 from bs4 import BeautifulSoup
 import requests
 from datetime import *
 import asyncio
-import aiogram
 from aiogram import *
 from aiogram.types import *
-import numpy as np
 import mysql
 import logging
 from aiogram.utils.keyboard import *
-import pandas as pd
-builder = ReplyKeyboardBuilder()
 
 now = datetime.now()
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
@@ -26,15 +20,11 @@ speki = {"date":[],
 
 dp = Dispatcher()
 
-
-
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
     row = [KeyboardButton(text=item) for item in items]
     return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True)
 
-
 remove_key = ReplyKeyboardRemove()
-
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
