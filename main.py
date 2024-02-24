@@ -11,15 +11,8 @@ import aiogram
 from aiogram import *
 from aiogram.types import *
 import numpy as np
-#import logging
-#from selenium import webdriver
-#from selenium.webdriver.chrome.service import Service
-#from selenium.webdriver.common.by import By
-#from webdriver_manager.chrome import ChromeDriverManager
-#from selenium.webdriver.common.keys import Keys
-#from selenium.webdriver.common.action_chains import ActionChains
-#from selenium.webdriver.support.ui import WebDriverWait
-#from selenium.webdriver.support import expected_conditions as EC
+import mysql
+import logging
 from aiogram.utils.keyboard import *
 import pandas as pd
 builder = ReplyKeyboardBuilder()
