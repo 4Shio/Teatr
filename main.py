@@ -73,9 +73,6 @@ def update():
          result = result + " " + speki["date"][i] + " "  + speki["time"][i] + " " + speki["title"][i] + " " + speki["info"][i] + "\n"
 
     return result
-   
-
-
 
 async def main():
     await dp.start_polling(bot)
