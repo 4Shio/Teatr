@@ -7,16 +7,41 @@ from datetime import *
 import asyncio
 from aiogram import *
 from aiogram.types import *
-import mysql
+import mysql.connector
 import logging
 from aiogram.utils.keyboard import *
-
+from config import user,host,password,db_name
 now = datetime.now()
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 speki = {"date":[],
         "time":[],
         "title":[],
         "info":[]}
+try:
+    connection = mysql.connector.connect(
+        host=host,
+        user=user,
+        password=password,
+        port = 3306,
+        database=db_name,
+
+    )
+    print('DA')
+except Exception as ex:
+    print(ex)
+def get_connection():
+    conection =mysql.connector.connect(
+        host=host,
+        user=user,
+        password=password,
+        port=3306,
+        database=db_name)
+
+    cursor = conection.cursor(buffered=True)
+
+    return conection, cursor
+
+
 
 dp = Dispatcher()
 
