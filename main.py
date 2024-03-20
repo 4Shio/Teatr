@@ -93,7 +93,7 @@ pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2" , "ht
 tupel = []
 
 async  def update():
-    print(123)
+    change_data('DELETE FROM TEST ')
     for i in pages:
         try:
             page = requests.get(i)
@@ -105,7 +105,7 @@ async  def update():
                         #Число и дата
                         datesp = el.find(class_='AffichesItem_date__tJDVL').text
                         
-                        change_data("INSERT INTO TEST (date) VALUES %s",(datesp,))
+                        change_data("INSERT INTO TEST  VALUES (%s)",(datesp,))
                         #print (datesp)
                         #Время
                         timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
