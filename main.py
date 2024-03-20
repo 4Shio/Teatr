@@ -41,8 +41,36 @@ def get_connection():
 
     return conection, cursor
 
+def change_data(query, value = None) -> None:
+    connection, cursor =  get_connection()
+    if value is None:
+        cursor.execute(query)
+        connection.commit()
+    else:
+        cursor.execute(query,value)
+        connection.commit()
+
+    if connection.is_connected():
+        connection.close()
 
 
+def create_if_not_exists() -> None:
+    try:
+        connection, cursor =  get_connection()
+
+        cursor.execute("""CREATE TABLE IF NOT EXISTS TEST (
+            date VARCHAR(255)
+           )""")
+
+
+        connection.commit()
+
+    except Exception as error_code:
+        print("Error Base -> ", error_code)
+        connection.close()
+    finally:
+        connection.close()
+create_if_not_exists()
 dp = Dispatcher()
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
@@ -62,8 +90,10 @@ async def view(message:types.Message):
 
 pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2" , "https://mrteatr.ru/afisha/?page=3"  , "https://mrteatr.ru/afisha/?page=4" ]
 
+tupel = []
 
-def update():
+async  def update():
+    print(123)
     for i in pages:
         try:
             page = requests.get(i)
@@ -73,7 +103,9 @@ def update():
                     try:
 
                         #Число и дата
-                        datesp = str(el.find(class_='AffichesItem_date__tJDVL').text)
+                        datesp = el.find(class_='AffichesItem_date__tJDVL').text
+                        
+                        change_data("INSERT INTO TEST (date) VALUES %s",(datesp,))
                         #print (datesp)
                         #Время
                         timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
@@ -88,19 +120,24 @@ def update():
                         speki["time"].append(timesp)
                         speki["title"].append(tit)
                         speki["info"].append(info)
-                    except:pass
+                    except Exception as ex:
+                        print(ex)
 
         except:pass
-    
-    result = " "
-    
-    for i,eli in enumerate(speki["date"]):
-         result = result + " " + speki["date"][i] + " "  + speki["time"][i] + " " + speki["title"][i] + " " + speki["info"][i] + "\n"
 
-    return result
-   
+    #result = " "
+    #
+    #for i,eli in enumerate(speki["date"]):
+    #     result = result + " " + speki["date"][i] + " "  + speki["time"][i] + " " + speki["title"][i] + " " + speki["info"][i] + "\n"
+#
+    #return result
+    await asyncio.sleep(1000)
 async def main():
-    await dp.start_polling(bot)
+    while True:
+        task1 = asyncio.create_task(update())
+        task2 = asyncio.create_task(dp.start_polling(bot))
+        await task1
+        await task2
         
 if __name__ == "__main__":
     asyncio.run(main())
