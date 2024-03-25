@@ -10,27 +10,29 @@ from aiogram.types import *
 import mysql.connector
 import logging
 from aiogram.utils.keyboard import *
-from config import user,host,password,db_name
+from config import user, host, password, db_name
+
 now = datetime.now()
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
-speki = {"date":[],
-        "time":[],
-        "title":[],
-        "info":[]}
+
+symvols_to_delete = "/"
+
 try:
     connection = mysql.connector.connect(
         host=host,
         user=user,
         password=password,
-        port = 3306,
+        port=3306,
         database=db_name,
 
     )
-    print('DA')
+    print('Connection complet')
 except Exception as ex:
     print(ex)
+
+
 def get_connection():
-    conection =mysql.connector.connect(
+    conection = mysql.connector.connect(
         host=host,
         user=user,
         password=password,
@@ -41,13 +43,14 @@ def get_connection():
 
     return conection, cursor
 
-def change_data(query, value = None) -> None:
-    connection, cursor =  get_connection()
+
+def change_data(query, value=None) -> None:
+    connection, cursor = get_connection()
     if value is None:
         cursor.execute(query)
         connection.commit()
     else:
-        cursor.execute(query,value)
+        cursor.execute(query, value)
         connection.commit()
 
     if connection.is_connected():
@@ -56,12 +59,15 @@ def change_data(query, value = None) -> None:
 
 def create_if_not_exists() -> None:
     try:
-        connection, cursor =  get_connection()
+        connection, cursor = get_connection()
 
         cursor.execute("""CREATE TABLE IF NOT EXISTS TEST (
-            date VARCHAR(255)
+            date VARCHAR(255),
+            name VARCHAR(255),
+            time VARCHAR(255),
+            info VARCHAR(255)
+            
            )""")
-
 
         connection.commit()
 
@@ -70,74 +76,79 @@ def create_if_not_exists() -> None:
         connection.close()
     finally:
         connection.close()
+
+
 create_if_not_exists()
 dp = Dispatcher()
+
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
     row = [KeyboardButton(text=item) for item in items]
     return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True)
 
+
 remove_key = ReplyKeyboardRemove()
+
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer("Привет от бота",reply_markup=make_row_keyboard(["View"]))
+    await message.answer("Привет от бота", reply_markup=make_row_keyboard(["View"]))
+
 
 @dp.message(F.text == "View")
-async def view(message:types.Message):
+async def view(message: types.Message):
+    await message.answer( text = update() )
 
-    await message.answer(text = update())
 
-pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2" , "https://mrteatr.ru/afisha/?page=3"  , "https://mrteatr.ru/afisha/?page=4" ]
+pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2", "https://mrteatr.ru/afisha/?page=3",
+         "https://mrteatr.ru/afisha/?page=4"]
 
 tupel = []
 
-async  def update():
+
+async def update():
     change_data('DELETE FROM TEST ')
     for i in pages:
         try:
             page = requests.get(i)
             soup = BeautifulSoup(page.text, "html.parser")
-            spectacless = ( soup.find_all(class_='AffichesItem_item__NUTcg'))
+            spectacless = (soup.find_all(class_='AffichesItem_item__NUTcg'))
             for iow, el in enumerate(spectacless):
-                    try:
+                try:
 
-                        #Число и дата
-                        datesp = el.find(class_='AffichesItem_date__tJDVL').text
-                        
-                        change_data("INSERT INTO TEST  VALUES (%s)",(datesp,))
-                        #print (datesp)
-                        #Время
-                        timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
-                        #print (timesp)
-                        #Название
-                        tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
-                        #print(tit)
-                        #Длительность
-                        info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
-                        #print(info)
-                        speki["date"].append(datesp)
-                        speki["time"].append(timesp)
-                        speki["title"].append(tit)
-                        speki["info"].append(info)
-                    except Exception as ex:
-                        print(ex)
+                    # Число и дата
+                    datesp = el.find(class_='AffichesItem_date__tJDVL').text
 
-        except:pass
+                    for sym in symvols_to_delete:
+                        datesp = datesp.replace(sym," ")
 
-    #result = " "
-    #
-    #for i,eli in enumerate(speki["date"]):
-    #     result = result + " " + speki["date"][i] + " "  + speki["time"][i] + " " + speki["title"][i] + " " + speki["info"][i] + "\n"
-#
-    #return result
+                    # Время
+                    timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
+
+                    # Название
+                    tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
+
+                    # Длительность
+                    info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
+
+                    change_data("INSERT INTO TEST (date, name, time, info) VALUES (%s ,%s ,%s, %s)", (datesp, tit, timesp, info))
+
+                except Exception as ex:
+                    print(ex)
+
+        except:
+            pass
+    print('Update complete')
     await asyncio.sleep(1000)
+
+
 async def main():
     while True:
         task1 = asyncio.create_task(update())
         task2 = asyncio.create_task(dp.start_polling(bot))
         await task1
         await task2
-        
+
+
 if __name__ == "__main__":
     asyncio.run(main())
