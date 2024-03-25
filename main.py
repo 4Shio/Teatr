@@ -1,5 +1,3 @@
-import datetime
-import bs4
 from aiogram.filters import Command
 from bs4 import BeautifulSoup
 import requests
