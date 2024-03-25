@@ -76,6 +76,34 @@ def create_if_not_exists() -> None:
         connection.close()
 
 
+async def fetchone(query, value=None):
+    connection, cursor = await get_connection()
+    if value is None:
+        cursor.execute(query)
+    else:
+        cursor.execute(query, value)
+
+    result = cursor.fetchone()
+
+    if connection.is_connected():
+        connection.close()
+
+    return result[0]
+
+
+async def fetchall(query, value=None):
+    connection, cursor = await get_connection()
+    if value is None:
+        cursor.execute(query)
+    else:
+        cursor.execute(query, value)
+
+    result = cursor.fetchall()
+
+    if connection.is_connected():
+        connection.close()
+
+    return result
 create_if_not_exists()
 dp = Dispatcher()
 
@@ -129,6 +157,10 @@ async def update():
                     # Длительность
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
 
+
+                    
+
+                    #Закидывание в базу
                     change_data("INSERT INTO TEST (date, name, time, info) VALUES (%s ,%s ,%s, %s)", (datesp, tit, timesp, info))
 
                 except Exception as ex:

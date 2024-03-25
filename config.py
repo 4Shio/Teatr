@@ -1,4 +1,4 @@
 host = 'localhost'
 user = 'root'
 password = '1121'
-db_name = 'test'
+db_name = 'shio'
