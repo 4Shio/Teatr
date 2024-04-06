@@ -158,7 +158,7 @@ async def update():
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
 
 
-                    
+
 
                     #Закидывание в базу
                     change_data("INSERT INTO TEST (date, name, time, info) VALUES (%s ,%s ,%s, %s)", (datesp, tit, timesp, info))
