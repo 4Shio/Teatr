@@ -16,6 +16,7 @@ bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 symvols_to_delete = "/"
 
 try:
+    
     connection = mysql.connector.connect(
         host=host,
         user=user,
@@ -76,35 +77,9 @@ def create_if_not_exists() -> None:
         connection.close()
 
 
-async def fetchone(query, value=None):
-    connection, cursor = await get_connection()
-    if value is None:
-        cursor.execute(query)
-    else:
-        cursor.execute(query, value)
-
-    result = cursor.fetchone()
-
-    if connection.is_connected():
-        connection.close()
-
-    return result[0]
 
 
-async def fetchall(query, value=None):
-    connection, cursor = await get_connection()
-    if value is None:
-        cursor.execute(query)
-    else:
-        cursor.execute(query, value)
-
-    result = cursor.fetchall()
-
-    if connection.is_connected():
-        connection.close()
-
-    return result
-create_if_not_exists()
+    create_if_not_exists()
 dp = Dispatcher()
 
 
@@ -116,14 +91,14 @@ def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
 remove_key = ReplyKeyboardRemove()
 
 
-@dp.message(Command("start"))
-async def cmd_start(message: types.Message):
-    await message.answer("Привет от бота", reply_markup=make_row_keyboard(["View"]))
+#@dp.message(Command("start"))
+#async def cmd_start(message: types.Message):
+#    await message.answer("Привет от бота", reply_markup=make_row_keyboard(["View"]))
 
 
-@dp.message(F.text == "View")
-async def view(message: types.Message):
-    await message.answer( text = update() )
+#@dp.message(F.text == "View")
+#async def view(message: types.Message):
+#    await message.answer( text = update() )
 
 
 pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2", "https://mrteatr.ru/afisha/?page=3",
