@@ -11,7 +11,7 @@ try:
         database=db_name,
 
     )
-    print('Connection complet')
+    print('Connection complete')
 except Exception as ex:
     print(ex)
 
@@ -28,7 +28,8 @@ def get_connection():
 
     return conection, cursor
 
-
+def cursor():
+    return cursor
 def change_data(query, value=None) -> None:
     connection, cursor = get_connection()
     if value is None:
@@ -47,6 +48,8 @@ def create_if_not_exists() -> None:
         connection, cursor = get_connection()
 
         cursor.execute("""CREATE TABLE IF NOT EXISTS TEST (
+                       
+            
             date VARCHAR(255),
             name VARCHAR(255),
             time VARCHAR(255),
@@ -75,7 +78,6 @@ def fetchone(query,value = None):
         connection.close()
     
     return result[0]
-
 
 def fetchall(query,value = None):
     connection, cursor = get_connection()

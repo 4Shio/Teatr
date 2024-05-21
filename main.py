@@ -1,21 +1,23 @@
-from aiogram.filters import Command 
 from bs4 import BeautifulSoup
 import requests
 from datetime import *
 import asyncio
 from aiogram import *
+from aiogram.filters import Command 
 from aiogram.types import *
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from config import user, host, password, db_name
-from sql import change_data
+from sql import change_data, fetchall, fetchone, get_connection
+import random
 
-
+connection, cursor = get_connection()
+check_povtorenie = False
 now = datetime.now()
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 
 symvols_to_delete = "/"
-
 dp = Dispatcher()
+        
 
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
@@ -28,13 +30,16 @@ remove_key = ReplyKeyboardRemove()
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer("Привет от бота", reply_markup=make_row_keyboard(["View"]))
+    await message.answer("Привет от бота", reply_markup=make_row_keyboard(["View", "Add"] ))
 
+@dp.message(F.text == "View")
+async def view(message: types.Message):
+    await message.answer( text = '\n'.join(' '.join (str(i) for i in v ) for v in fetchall("SELECT name, date, time FROM test")))
 
-#@dp.message(F.text == "View")
-#async def view(message: types.Message):
-#    await message.answer( text = update() )
-
+@dp.message(F.text == "Add")
+async def Del(message: types.Message):
+    await message.answer(text='')
+   
 
 pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2", "https://mrteatr.ru/afisha/?page=3",
          "https://mrteatr.ru/afisha/?page=4"]
@@ -43,7 +48,7 @@ tupel = []
 
 
 async def update():
-    change_data('DELETE FROM TEST')
+    
     for i in pages:
         try:
             page = requests.get(i)
@@ -66,10 +71,12 @@ async def update():
 
                     # Длительность
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
-
+                    
                     #Закидывание в базу
-                    change_data("INSERT INTO TEST (date, name, time, info) VALUES (%s ,%s ,%s, %s)", (datesp, tit, timesp, info))
-
+                    
+                    if fetchone("SELECT COUNT(*) FROM test WHERE name =%s AND date = %s",(tit,datesp)) == 0:
+                        change_data("INSERT INTO TEST (date, name, time, info ) VALUES (%s ,%s ,%s, %s)", (datesp, tit, timesp, info))
+                    
                 except Exception as ex:
                     print(ex)
 
