@@ -8,10 +8,9 @@ from aiogram.types import *
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from config import user, host, password, db_name
 from sql import change_data, fetchall, fetchone, get_connection
-import random
 
-connection, cursor = get_connection()
-check_povtorenie = False
+
+
 now = datetime.now()
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 
