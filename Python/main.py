@@ -29,7 +29,7 @@ remove_key = ReplyKeyboardRemove()
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer("Привет от бота", reply_markup=make_row_keyboard(["View", "Add"] ))
+    await message.answer("Привет от бота", reply_markup=make_row_keyboard(["View", "Add","analys"] ))
 
 @dp.message(F.text == "View")
 async def view(message: types.Message):
@@ -38,7 +38,9 @@ async def view(message: types.Message):
 @dp.message(F.text == "Add")
 async def Del(message: types.Message):
     await message.answer(text='')
-   
+@dp.message(F.text == "analys")
+async def analys(message: types.Message):
+    await message.answer(text='\n'.join(' '.join (str(i) for i in v ) for v in fetchall("SELECT name, turns FROM analys")))
 
 pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2", "https://mrteatr.ru/afisha/?page=3",
          "https://mrteatr.ru/afisha/?page=4"]
@@ -88,10 +90,8 @@ async def update():
     try:
         names = fetchall("SELECT name FROM test") 
         for i,e in enumerate (names):
-            #print(names[i][0])
             if fetchone("SELECT COUNT(*) FROM analys WHERE name = %s",(names[i])) == 0:
                 change_data("INSERT INTO analys (name, turns) VALUES (%s,%s)", (names[i][0],fetchone(" SELECT COUNT(*) FROM test WHERE name =%s",(names[i]))))  
-        print(fetchall)
         
         print("Analys complete")
     except Exception as ex:
