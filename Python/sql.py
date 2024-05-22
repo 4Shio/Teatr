@@ -1,14 +1,14 @@
 from mysql.connector import connect
-from config import host,user,password,db_name
+from Python.config import host,user,password,db_name
 
 try:
     
     connection = connect(
-        host=host,
-        user=user,
-        password=password,
+        host="localhost",
+        user="root",
+        password="1121",
         port=3306,
-        database=db_name,
+        database="shio",
 
     )
     print('Connection complete')

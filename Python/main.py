@@ -6,8 +6,8 @@ from aiogram import *
 from aiogram.filters import Command 
 from aiogram.types import *
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
-from config import user, host, password, db_name
-from sql import change_data, fetchall, fetchone, get_connection
+from Python.config import user, host, password, db_name
+from Python.sql import change_data, fetchall, fetchone, get_connection
 
 
 

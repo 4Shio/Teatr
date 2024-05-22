@@ -1,0 +1,14 @@
+services:
+  pythonapp:
+    build: ./python
+    command: [sh -c  "sleep 10s"   "python3", "main.py,config.py,sql.py"]
+    depends_on:
+      - mysql
+  mysql:
+    build: ./mysql/
+    restart: always
+    environment:
+      MYSQL_DATABSE: 'shio'
+      MYSQL_ROOT_PASSWORD: '1121'
+    ports:
+      - '3307:3306'
