@@ -73,7 +73,7 @@ def create_if_not_exists() -> None:
                        
             
             name VARCHAR(255),
-            turns INT NOT NULL
+            turns VARCHAR(255)
             
            )""")
 

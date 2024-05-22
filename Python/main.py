@@ -10,7 +10,7 @@ from config import user, host, password, db_name
 from sql import change_data, fetchall, fetchone, get_connection
 
 
-
+connection , cursor = get_connection()
 now = datetime.now()
 bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 
@@ -74,34 +74,40 @@ async def update():
                     #Закидывание в базу
                     
                     if fetchone("SELECT COUNT(*) FROM test WHERE name =%s AND date = %s",(tit,datesp)) == 0:
+                         
                         change_data("INSERT INTO TEST (date, name, time, info ) VALUES (%s ,%s ,%s, %s)", (datesp, tit, timesp, info))
                     
-
                 except Exception as ex:
                     print(ex)
-
         except:
             pass
+        
+
+
     print('Update complete')
-    await asyncio.sleep(1000)
-async def analys():
-    names = fetchall("SELECT name FROM test")
-    print(names[0][0])
-    #for i,e in enumerate in names:
-      
-        #if fetchone("SELECT COUNT(*) FROM test WHERE name =%s ",(names)) == 0:
-           #             change_data("INSERT INTO TEST (date, name, time, info ) VALUES (%s)", (names))
-    await asyncio.sleep(1000)         
-                    
+    try:
+        names = fetchall("SELECT name FROM test") 
+        for i,e in enumerate (names):
+            #print(names[i][0])
+            if fetchone("SELECT COUNT(*) FROM analys WHERE name = %s",(names[i])) == 0:
+                change_data("INSERT INTO analys (name, turns) VALUES (%s,%s)", (names[i][0],fetchone(" SELECT COUNT(*) FROM test WHERE name =%s",(names[i]))))  
+        print(fetchall)
+        
+        print("Analys complete")
+    except Exception as ex:
+        print(ex)
+    await asyncio.sleep(1000)       
+
+       
+
 
 async def main():
     while True:
         task1 = asyncio.create_task(update())
         task2 = asyncio.create_task(dp.start_polling(bot))
-        task3 = asyncio.create_task(analys())
         await task1
         await task2
-        await task3
+
 
 if __name__ == "__main__":
     asyncio.run(main())
