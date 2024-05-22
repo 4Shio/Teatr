@@ -38,6 +38,7 @@ async def view(message: types.Message):
 @dp.message(F.text == "Add")
 async def Del(message: types.Message):
     await message.answer(text='')
+    
 @dp.message(F.text == "analys")
 async def analys(message: types.Message):
     await message.answer(text='\n'.join(' '.join (str(i) for i in v ) for v in fetchall("SELECT name, turns FROM analys")))
