@@ -1,6 +1,6 @@
 services:
   pythonapp:
-    build: ./python
+    build: ./Python
     command: [sh -c  "sleep 10s"   "python3", "main.py,config.py,sql.py"]
     depends_on:
       - mysql

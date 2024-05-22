@@ -1,1 +1,2 @@
-use test;
+SELECT * FROM test 
+
