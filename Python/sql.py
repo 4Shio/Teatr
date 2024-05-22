@@ -65,6 +65,25 @@ def create_if_not_exists() -> None:
     finally:
         connection.close()
 
+def create_if_not_exists() -> None:
+    try:
+        connection, cursor = get_connection()
+
+        cursor.execute("""CREATE TABLE IF NOT EXISTS ANALYS (
+                       
+            
+            name VARCHAR(255),
+            turns INT NOT NULL
+            
+           )""")
+
+        connection.commit()
+
+    except Exception as error_code:
+        print("Error Base -> ", error_code)
+        connection.close()
+    finally:
+        connection.close()
 def fetchone(query,value = None):
     connection, cursor = get_connection()
     if value is None:

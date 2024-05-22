@@ -76,6 +76,7 @@ async def update():
                     if fetchone("SELECT COUNT(*) FROM test WHERE name =%s AND date = %s",(tit,datesp)) == 0:
                         change_data("INSERT INTO TEST (date, name, time, info ) VALUES (%s ,%s ,%s, %s)", (datesp, tit, timesp, info))
                     
+
                 except Exception as ex:
                     print(ex)
 
@@ -83,15 +84,24 @@ async def update():
             pass
     print('Update complete')
     await asyncio.sleep(1000)
-
+async def analys():
+    names = fetchall("SELECT name FROM test")
+    print(names[0][0])
+    #for i,e in enumerate in names:
+      
+        #if fetchone("SELECT COUNT(*) FROM test WHERE name =%s ",(names)) == 0:
+           #             change_data("INSERT INTO TEST (date, name, time, info ) VALUES (%s)", (names))
+    await asyncio.sleep(1000)         
+                    
 
 async def main():
     while True:
         task1 = asyncio.create_task(update())
         task2 = asyncio.create_task(dp.start_polling(bot))
+        task3 = asyncio.create_task(analys())
         await task1
         await task2
-
+        await task3
 
 if __name__ == "__main__":
     asyncio.run(main())
