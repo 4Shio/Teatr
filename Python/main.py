@@ -36,15 +36,15 @@ remove_key = ReplyKeyboardRemove()
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer("Привет от бота", reply_markup=make_row_keyboard(["View", "LAfterT","analys"] ))
+    await message.answer("Привет от бота", reply_markup=make_row_keyboard(["View", "LAfterT","analys","Next"] ))
 
 @dp.message(F.text == "View")
 async def view(message: types.Message):
     await message.answer( text = '\n'.join(' '.join (str(i) for i in v ) for v in fetchall("SELECT name, date, time FROM test")))
 
-@dp.message(F.text == "Add")
+@dp.message(F.text == "Next")
 async def Del(message: types.Message):
-    await message.answer(text='')
+    await message.answer(text=' '.join(str(i) for i in (fetchall("SELECT name , date ,time  FROM test"))[0]))
     
 @dp.message(F.text == "analys")
 async def analys(message: types.Message):
@@ -104,14 +104,7 @@ async def update():
 
         
     print('Update complete')
-    #try:
-     #   dates = fetchall("SELECT date FROM test")
-      #  for i,e in enumerate (dates):
-       #     if (datetime.strptime(dates[i][0],'%d %m')) > datetime.strptime(today,"%d %m"):
-        #        change_data("INSERT INTO TEST (aftday)  (%s)",(1))
-         #       #print(fetchall("SELECT name ,date ,time FROM test WHERE date = %s",(dates[i])))
-    #except Exception as ex:
-    #   print(ex)
+
            
 
 
