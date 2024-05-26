@@ -17,7 +17,13 @@ bot = Bot(token='6426552218:AAEAcGWJ69_D3lZB_Ln6v5GRZlULOUR-3V0')
 
 symvols_to_delete = "/"
 dp = Dispatcher()
-        
+
+
+def datechek(date):
+    if (datetime.strptime(date,"%d %m")) > (datetime.strptime(today,"%d %m")):
+        return 1
+    else:
+        return 0
 
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
@@ -46,13 +52,7 @@ async def analys(message: types.Message):
 
 @dp.message(F.text == "LAfterT")
 async def LAfrerT(message: types.Message):
-    dates = fetchall("SELECT date FROM test")
-    Speki_after =[]
-    for i,e in enumerate (dates):
-        if (datetime.strptime(dates[i][0],'%d %m')) > datetime.strptime(today,"%d %m"):
-
-            Speki_after.append(fetchone("SELECT name , date FROM test WHERE date = %s",(dates[i])))
-            await message.answer(text=Speki_after)
+    await message.answer(text='\n'.join(' '.join (str(i) for i in v ) for v in fetchall("SELECT name, date, time FROM test WHERE aftday =%s",([1]))))
                                 
                          
                         
@@ -90,10 +90,11 @@ async def update():
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
                     
                     #Закидывание в базу
-                    
+                    #if (datetime.strptime(timesp,"%d %m"))> (datetime.strptime(today,"%d %m")):
+                     #   print("da")
                     if fetchone("SELECT COUNT(*) FROM test WHERE name =%s AND date = %s",(tit,datesp)) == 0:
                          
-                        change_data("INSERT INTO TEST (date, name, time, info ) VALUES (%s ,%s ,%s, %s)", (datesp, tit, timesp, info))
+                        change_data("INSERT INTO TEST (date, name, time, info, aftday ) VALUES (%s ,%s ,%s, %s, %s)", (datesp, tit, timesp, info, datechek(datesp)))
                    
                 except Exception as ex:
                     print(ex)
@@ -101,14 +102,16 @@ async def update():
             pass
         
 
-
+        
     print('Update complete')
-    dates = fetchall("SELECT date FROM test")
-    for i,e in enumerate (dates):
-        if (datetime.strptime(dates[i][0],'%d %m')) > datetime.strptime(today,"%d %m"):
-            #print(dates[i][0])
-            print(fetchall("SELECT name ,date ,time FROM test WHERE date = %s",(dates[i])))
-
+    #try:
+     #   dates = fetchall("SELECT date FROM test")
+      #  for i,e in enumerate (dates):
+       #     if (datetime.strptime(dates[i][0],'%d %m')) > datetime.strptime(today,"%d %m"):
+        #        change_data("INSERT INTO TEST (aftday)  (%s)",(1))
+         #       #print(fetchall("SELECT name ,date ,time FROM test WHERE date = %s",(dates[i])))
+    #except Exception as ex:
+    #   print(ex)
            
 
 

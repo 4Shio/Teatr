@@ -1,5 +1,4 @@
-
-SELECT * FROM test
+DELEte  FROM analys
 
 
 
