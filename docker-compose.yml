@@ -1,14 +1,14 @@
+version: '3.9'
+
 services:
-  pythonapp:
-    build: ./Python
-    command: [sh -c  "sleep 10s"   "python3", "main.py,config.py,sql.py"]
-    depends_on:
-      - mysql
-  mysql:
-    build: ./mysql/
+  db:
     restart: always
+    image:  postgres:16-alpine
+    container_name: db_auth
+   
     environment:
-      MYSQL_DATABSE: 'shio'
-      MYSQL_ROOT_PASSWORD: '1121'
+      POSTGRES_PASSWORD: 1121
+      POSTGRES_USER: admin
+      POSTGRES_DB: test
     ports:
-      - '3307:3306'
+      - "5433:5432"
