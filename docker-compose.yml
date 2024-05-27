@@ -1,5 +1,7 @@
 version: '3.9'
-
+volumes:
+  db:
+  pgadmin:
 services:
   db:
     restart: always
@@ -7,8 +9,20 @@ services:
     container_name: db_auth
    
     environment:
-      POSTGRES_PASSWORD: 1121
+      POSTGRES_PASSWORD: root
       POSTGRES_USER: admin
       POSTGRES_DB: test
     ports:
       - "5433:5432"
+  pgadmin:
+    container_name: pgadmin
+    image:  dpage/pgadmin4
+    
+    environment:
+      PGADMIN_DEFAULT_EMAIL: katyushink92@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "5050:80"
+    depends_on:
+    - db
