@@ -12,8 +12,8 @@ services:
         POSTGRES_DB: teatr
       ports:
         - "5433:5433"
-      volumes: 
-        - pgdata:/home/shio/Database       
+      volumes:
+        - ./postgres-data:/var/lib/postgresql/data       
       network_mode: host
       
   adminer:
