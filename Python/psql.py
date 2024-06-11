@@ -53,7 +53,7 @@ for i in pages:
         except:
             pass
         
-
-        
 print('Update complete')
 
+with engine.connect() as conn:
+    result = selec

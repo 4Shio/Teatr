@@ -5,13 +5,11 @@ from bs4 import BeautifulSoup
 import requests
 from datetime import*
 
-engine = create_engine("postgresql+psycopg2://admin:root@78.36.44.30:5432/test",echo=False,
+engine = create_engine("postgresql+psycopg2://shio:root1121@78.36.44.30:5432/teatr",echo=False,
 pool_size=5,
 max_overflow=10,
 )
 meta_data = MetaData()
-
-
 test_table = Table(
     'test',
     meta_data,
