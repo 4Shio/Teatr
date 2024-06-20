@@ -8,9 +8,11 @@ from aiogram.filters import Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import Mapped,mapped_column
-from base.base import engine,Table,meta_data,Base,session
+from base import *
 from config import *
-from handlers.start_handlers import *
+from handler import *
+from update import*
+from threading import Thread
 
 
 async def main() -> None:
@@ -19,6 +21,8 @@ async def main() -> None:
     dp = Dispatcher(storage=MemoryStorage())
 
     dp.include_router(router)    
+
+    Thread(target=update,daemon=True).start()
 
     try:
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
