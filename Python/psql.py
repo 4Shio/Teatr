@@ -3,10 +3,9 @@ import psycopg2
 from bs4 import BeautifulSoup
 import requests
 from datetime import*
-from alchemy import engine,meta_data,test_table,analys_table
-from sqlalchemy import Insert,select,values,func,Table
-from sqlalchemy.orm import Session
-
+from alchemys import engine,meta_data,no_orm1,no_orm2
+from sqlalchemy import Insert,select,values,func,Table,text,Text
+from funcs import con
 meta_data.create_all(engine)
 
 now = datetime.now()
@@ -40,14 +39,15 @@ for i in pages:
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
 
                     #Закидывание в базу
-                    with engine.connect() as conn:
-                        update_base =conn.execute( Insert(test_table).values(
-                            [
-                                {'name':tit, "date":datesp, "time":timesp,"info":info}
-                            ]
-                
-                    ))
-                        conn.commit()
+
+                    #stmt = (select(func.count('*')).select_from(no_orm1).where(no_orm1.c.name == tit))
+#
+                    #print(con(engine,stmt))
+#
+                    #Insert(no_orm1).values(name = tit, date = datesp, time = timesp, info = info)
+#
+
+                    
                 except Exception as ex:
                     print(ex)
         except:
@@ -55,5 +55,17 @@ for i in pages:
         
 print('Update complete')
 
+
 with engine.connect() as conn:
-    result = selec
+
+    cont= select(no_orm1.name
+    print(conn.execute(cont) )    
+
+
+                        #update_base =conn.execute( Insert(no_orm1).values(
+                            #[
+                              #  {'name':tit, "date":datesp, "time":timesp,"info":info}
+                            #]
+                            #))
+                    
+    conn.commit()

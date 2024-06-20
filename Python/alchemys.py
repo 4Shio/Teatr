@@ -9,9 +9,10 @@ engine = create_engine("postgresql+psycopg2://shio:root1121@78.36.44.30:5432/tea
 pool_size=5,
 max_overflow=10,
 )
+
 meta_data = MetaData()
-test_table = Table(
-    'test',
+no_orm1 = Table(
+    'no_orm1',
     meta_data,
     Column('id',Integer,primary_key=True),
     Column('name',String),
@@ -19,8 +20,8 @@ test_table = Table(
     Column('time',String),
     Column('info',String)
 )
-analys_table=Table(
-    'analys',
+no_orm2=Table(
+    'no_orm2',
     meta_data,
     Column('id',Integer,primary_key=True),
     Column('name',String),

@@ -14,9 +14,6 @@ symvols_to_delete = "/"
 pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2", "https://mrteatr.ru/afisha/?page=3",
          "https://mrteatr.ru/afisha/?page=4"]
 
-tupel = []
-
-
 
 async def update(): 
     for i in pages:
