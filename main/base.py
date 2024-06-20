@@ -1,8 +1,9 @@
-from sqlalchemy import URL,create_engine,text,Insert,MetaData,Table,Column,String,values,Integer,select,ForeignKey
+from typing import Any
+from sqlalchemy import URL,create_engine,text,Insert,MetaData,Table,Column,String,values,Integer,select,ForeignKey,ScalarResult
 from sqlalchemy.orm import Session,sessionmaker,DeclarativeBase,Mapped,mapped_column,relationship
-from sqlalchemy.ext.asyncio import create_async_engine,async_sessionmaker,AsyncSession
 from config import *
 from datetime import*
+from typing import List,Optional
 
 engine = create_engine(url=url,echo=False,
 pool_size=5,
@@ -18,16 +19,14 @@ class Speki(Base):
 
     id:Mapped[int] = mapped_column(primary_key=True)
     name:Mapped[str]
-    date:Mapped[str]
-    time:Mapped[str]
+    date:Mapped[date]
+    time:Mapped[time]
     info:Mapped[str]
-
-    #addresses: Mapped[List["Address"]] = relationship(
-    #    back_populates="Speki",cascade="all, delete-orphan"
-    #)
+    weekday:Mapped[str]
+ 
 
     def __repr__(self) -> str:
-        return f"Address(id={self.id!r}, name={self.name!r}, date={self.date!r}, time={self.time!r}, info={self.info!r})"
+        return f"( {self.name!r} {self.date!r} {self.time!r} {self.info!r}  {self.weekday!r})"
     
 class analys(Base):
     __tablename__ = "analys"
