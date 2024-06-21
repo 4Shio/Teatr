@@ -25,10 +25,10 @@ def replace(data):
     
 
 def date_repp(date):
-        return datetime.strptime((date),"%d-%m-%Y %H:%M")
+        return datetime.strptime((date),"%Y-%m-%d %H:%M:%S")
               
 def date_rep(date):
-        return datetime.strftime(date_repp(date),"%d-%m-%Y %H:%M")
+        return datetime.strftime(date_repp(date),"%Y-%m-%d %H:%M:%S")
 
 def del_s(var):
         for i in space_del:

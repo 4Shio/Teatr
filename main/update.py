@@ -17,15 +17,11 @@ def update():
                     datesp = str(el.find(class_='AffichesItem_date__tJDVL').text)
                     datesp= replace(datesp)
                     
-                    
                     # Время
                     timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
                     
-                
-                    full_date =date_rep((datesp + "-" + str(datetime.now().year) + " " + timesp.split(',')[0]))
+                    full_date =date_rep(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0] + ':'+str(0)+str(0)))
                     
-                    
-
                     weekday =  timesp.split(',')[1]
                     weekday =week_list.get(del_s(weekday))
                     
@@ -35,9 +31,8 @@ def update():
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
 
                     if (session.query(Speki).filter_by(name = tit, date = full_date , time = full_date, weekday = weekday).count()) == 0:
-                        print('Works')
-                        #spek = Speki(name = tit, date = datesp,time = timesp,info = info)
-                        #session.add(spek)
+                        spek = Speki(name = tit, date = full_date,time = full_date,info = info, weekday = weekday)
+                        session.add(spek)
 
                 except Exception as ex:
                     print(ex)
