@@ -14,16 +14,13 @@ def update():
             for iow, el in enumerate(spectacless):
                 try:
                     # Число и дата
-                    datesp = str(el.find(class_='AffichesItem_date__tJDVL').text)
-                    datesp= replace(datesp)
-                    
-                    # Время
+                    datesp= replace((str(el.find(class_='AffichesItem_date__tJDVL').text)))
+            
                     timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
                     
                     full_date =date_rep(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0] + ':'+str(0)+str(0)))
-                    
-                    weekday =  timesp.split(',')[1]
-                    weekday =week_list.get(del_s(weekday))
+                     
+                    weekday =week_list.get(del_s(timesp.split(',')[1]))
                     
                     # Название
                     tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
