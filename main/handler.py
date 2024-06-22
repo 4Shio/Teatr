@@ -7,7 +7,7 @@ from base import *
 from aiogram.types import ReplyKeyboardMarkup,ReplyKeyboardRemove,KeyboardButton
 from datetime import *
 from aiogram.fsm.state import StatesGroup, State
-
+from func import*
 router = Router()
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
@@ -16,11 +16,6 @@ def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
 
 remove_key = ReplyKeyboardRemove()
 
-def make_str(text_str):
-    return   ' '.join(str(i) for i in text_str )
-def make_more_str(text_str):
-      return '\n'.join('  '.join(str(i) for i in v) for v in text_str)
-
 
 
 with session as session:
@@ -28,7 +23,7 @@ with session as session:
     query = select(Speki.name, Speki.date, Speki.time, Speki.info)
     @router.message(Command("start"))
     async def start(message:Message):
-                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Расписание","Аналитика"]))
+                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Расписание","Cледующий спектакль"]))
 
     @router.message(F.text == 'Расписание')
     async def get_all(message_get_all:Message):
@@ -36,11 +31,22 @@ with session as session:
                   Speki.name,
                   Speki.date,
                   Speki.time,
-                  Speki.info).all()))
-
- 
+                  Speki.weekday,
+                  Speki.info).filter_by(Speki.date >now).all()))
+           
+    @router.message(F.text == 'Cледующий спектакль')
+    async def get_all(message_get_all:Message):
+           await message_get_all.answer(text= make_str(session.query(
+                  Speki.name,
+                  Speki.date,
+                  Speki.time,
+                  Speki.weekday,
+                  Speki.info).filter(
+                         datetime.strptime(str(Speki.date+" "+Speki.time),"%Y-%m-%d %H:%M:%S")>now
+                         ).first()))
     
     
+    print((session.query(Speki.date).first(),session.query(Speki.time).first()).text)
 
 
 
