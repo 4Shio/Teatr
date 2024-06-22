@@ -34,3 +34,5 @@ def del_s(var):
         for i in space_del:
                 return var.replace(i,'')
         
+#def und_date(date,time):
+#        if datetime.s

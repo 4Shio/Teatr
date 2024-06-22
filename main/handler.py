@@ -8,6 +8,9 @@ from aiogram.types import ReplyKeyboardMarkup,ReplyKeyboardRemove,KeyboardButton
 from datetime import *
 from aiogram.fsm.state import StatesGroup, State
 
+
+now = datetime.now()
+
 router = Router()
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
@@ -28,19 +31,26 @@ with session as session:
     query = select(Speki.name, Speki.date, Speki.time, Speki.info)
     @router.message(Command("start"))
     async def start(message:Message):
-                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Расписание","Аналитика"]))
+                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Все следующие","Следующий"]))
 
-    @router.message(F.text == 'Расписание')
+    @router.message(F.text == 'Все следующие')
     async def get_all(message_get_all:Message):
            await message_get_all.answer(text= make_more_str(session.query(
                   Speki.name,
                   Speki.date,
+                  Speki.weekday,
                   Speki.time,
-                  Speki.info).all()))
-
- 
-    
-    
+                  Speki.info).filter((Speki.date) > now).all()))
+   
 
 
+    @router.message(F.text == 'Следующий')
+    async def get_all(message_get_one:Message):
+           await message_get_one.answer(text= make_str(session.query(
+                  Speki.name,
+                  Speki.date,
+                  Speki.weekday,
+                  Speki.time,
+                  Speki.info).filter((Speki.date) < now).first()))
 
+   
