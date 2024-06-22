@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 from base import *
-from func import pages,symvols_to_delete,replace,date_rep,week_list,del_s
+from func import pages,symvols_to_delete,replace,date_rep,week_list,del_s,month_list
 import time
-
+import re
 def update():
     print("Update begin")
     for i in pages:
@@ -27,8 +27,13 @@ def update():
                     # Длительность
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
 
-                    if (session.query(Speki).filter_by(name = tit, date = full_date , time = full_date, weekday = weekday).count()) == 0:
-                        spek = Speki(name = tit, date = full_date,time = full_date,info = info, weekday = weekday)
+                    if (session.query(Speki).filter_by(name = tit, date = full_date ,  weekday = weekday).count()) == 0:
+                        spek = Speki(name = tit, date = full_date,info = info, weekday = weekday,
+                                     message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
+                                     month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
+                                     re.split("-|,|:|,| " , full_date)[3] +":"+ re.split("-|,|:|,| " , full_date)[4]+ "\n"
+                                     + info+" "+"\n"
+                                     )
                         session.add(spek)
 
                 except Exception as ex:

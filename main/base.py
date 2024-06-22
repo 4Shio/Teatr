@@ -19,20 +19,15 @@ class Speki(Base):
 
     id:Mapped[int] = mapped_column(primary_key=True)
     name:Mapped[str]
-    date:Mapped[date]
-    time:Mapped[time]
+    date:Mapped[datetime]
     info:Mapped[str]
     weekday:Mapped[str]
+    message_text:Mapped[str]
  
 
     def __repr__(self) -> str:
-        return f"( {self.name!r} {self.date!r} {self.time!r} {self.info!r}  {self.weekday!r})"
+        return f"( {self.name!r} {self.date!r} {self.info!r}  {self.weekday!r})"
     
-class analys(Base):
-    __tablename__ = "analys"
-    id:Mapped[int] = mapped_column(primary_key=True)
-    name:Mapped[str]
-    quantity:Mapped[int]
 
 
 Base.metadata.create_all(engine)
