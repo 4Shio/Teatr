@@ -48,4 +48,4 @@ with session as session:
 
     
 
-   
+    print(session.query(Speki.date).values(all))
