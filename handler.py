@@ -27,26 +27,26 @@ def make_more_str(text_str):
 
 
 
-with session as session:
-
-    
-    @router.message(Command("start"))
-    async def start(message:Message):
-                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Все следующие","Следующий"]))
-
-    @router.message(F.text == 'Все следующие')
-    async def get_all(message_get_all:Message):
-           await message_get_all.answer(text= make_more_str(session.query(
-                  Speki.message_text).filter((Speki.date) > now).all()))
-   
-
-
-    @router.message(F.text == 'Следующий')
-    async def get_all(message_get_one:Message):
-           
-           #await message_get_one.answer(text= make_str(session.query(Speki.message_text).filter((Speki.date)>now).first()))
-           await message_get_one.answer(text= session.query(Speki).filter((Speki.date)>now).value(Speki.message_text))
-    
-
-    print(session.query(Speki.date).all()[-1])
+#async with async_session() as session:
+#
+#    
+#    @router.message(Command("start"))
+#    async def start(message:Message):
+#                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Все следующие","Следующий"]))
+#
+#    @router.message(F.text == 'Все следующие')
+#    async def get_all(message_get_all:Message):
+#           await message_get_all.answer(text= make_more_str(session.query(
+#                  Speki.message_text).filter((Speki.date) > now).all()))
+#   
+#
+#
+#    @router.message(F.text == 'Следующий')
+#    async def get_all(message_get_one:Message):
+#           
+#           #await message_get_one.answer(text= make_str(session.query(Speki.message_text).filter((Speki.date)>now).first()))
+#           await message_get_one.answer(text= session.query(Speki).filter((Speki.date)>now).value(Speki.message_text))
+#    
+#
+#    #print(session.query(Speki.date).all()[-1])
     
