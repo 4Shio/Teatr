@@ -4,7 +4,8 @@ from base import *
 from func import pages,symvols_to_delete,replace,date_rep,week_list,del_s,month_list
 import time
 import re
-def update():
+import asyncio
+async def update():
     print("Update begin")
     for i in pages:
         try:
@@ -43,4 +44,5 @@ def update():
         
     session.commit()
     print('Update complete')
-    time.sleep(1000)
+    await asyncio.sleep(1000)
+    #time.sleep(1000)
