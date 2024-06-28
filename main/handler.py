@@ -44,8 +44,9 @@ with session as session:
     @router.message(F.text == 'Следующий')
     async def get_all(message_get_one:Message):
            
-           await message_get_one.answer(text= make_str(session.query(Speki.message_text).filter((Speki.date)>now).first()))
-
+           #await message_get_one.answer(text= make_str(session.query(Speki.message_text).filter((Speki.date)>now).first()))
+           await message_get_one.answer(text= session.query(Speki).filter((Speki.date)>now).value(Speki.message_text))
     
 
-    print(session.query(Speki.date).values(all))
+    print(session.query(Speki.date).all()[-1])
+    

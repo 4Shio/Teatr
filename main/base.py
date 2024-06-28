@@ -3,7 +3,7 @@ from sqlalchemy import URL,create_engine,text,Insert,MetaData,Table,Column,Strin
 from sqlalchemy.orm import Session,sessionmaker,DeclarativeBase,Mapped,mapped_column,relationship
 from config import *
 from datetime import*
-from typing import List,Optional
+
 
 engine = create_engine(url=url,echo=False,
 pool_size=5,
