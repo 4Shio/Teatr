@@ -1,7 +1,6 @@
-main/config.py
-main\__pycache__
+config.py
 __pycache__
 .idea
 .vscode
 *.pyc
-main/__pycache__
+
