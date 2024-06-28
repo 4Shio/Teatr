@@ -48,5 +48,5 @@ with session as session:
            await message_get_one.answer(text= session.query(Speki).filter((Speki.date)>now).value(Speki.message_text))
     
 
-    print(session.query(Speki.date).all()[-1])
+    #print(session.query(Speki.date).all()[-1])
     
