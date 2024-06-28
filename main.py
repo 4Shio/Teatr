@@ -22,9 +22,9 @@ async def main() -> None:
 
     dp.include_router(router)    
 
-    engine = create_async_engine(url=url)
+    engine = create_async_engine(url=asyncurl)
     async with engine.begin() as conn:
-
+        
         await conn.run_sync(Base.metadata.create_all)
     #Thread(target=update,daemon=True).start()
     while True:
