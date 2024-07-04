@@ -29,24 +29,23 @@ async def update():
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
 
                     async with async_session() as session:
-                       
+                        print((await session.execute(select(Speki).where(Speki.name == tit,Speki.date == full_date))).all().count())
                         
-                        if (session.query(Speki).filter_by(name = tit, date = full_date ,  weekday = weekday).count()) == 0:
-                        
+                        if (await session.execute(select(Speki).where(Speki.name == tit,Speki.date == full_date))).all().count() == 0:
                             spek = Speki(name = tit, date = full_date,info = info, weekday = weekday,
                                          message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
                                          month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
                                          re.split("-|,|:|,| " , full_date)[3] +":"+ re.split("-|,|:|,| " , full_date)[4]+ "\n"
                                          + info+" "+"\n"
                                          )
-                            await session.add(spek)
+                            session.add(spek)
 
                 except Exception as ex:
                     print(ex)
         except:
             pass
         
-    session.commit()
+    await session.commit()
     print('Update complete')
     await asyncio.sleep(100)
     

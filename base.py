@@ -8,11 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, AsyncSession,
 import asyncio
 
 #async_engine = create_async_engine(url= asyncurl,echo = False)
-#async_session = async_sessionmaker(async_engine)
-
 engine = create_async_engine(url= asyncurl,echo = False)
-async_session = AsyncSession(engine)
-session = Session(engine)
+async_session = async_sessionmaker(engine)
+
+#session = Session(engine)
 metadata = MetaData()
 
 
@@ -36,4 +35,10 @@ class Speki(Base):
 
 
 
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine)
+async def init_models():
+    async with engine.begin() as conn:
+        #await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
+
+asyncio.run(init_models())
