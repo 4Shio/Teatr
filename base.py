@@ -7,21 +7,14 @@ from datetime import*
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, AsyncSession, create_async_engine
 import asyncio
 
-engine = create_async_engine(url=asyncurl)
+#async_engine = create_async_engine(url= asyncurl,echo = False)
+#async_session = async_sessionmaker(async_engine)
 
-    
-
-#engine = create_engine(url=url,echo=False,
-pool_size=5,
-max_overflow=10,
-session = AsyncSession(engine)
-
-#session = AsyncSession(engine)
+engine = create_async_engine(url= asyncurl,echo = False)
+async_session = AsyncSession(engine)
+session = Session(engine)
 metadata = MetaData()
 
-async_session = sessionmaker(
-    engine, class_=AsyncSession, expire_on_commit=False
-)
 
 class Base(AsyncAttrs,DeclarativeBase):
     pass
