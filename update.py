@@ -29,17 +29,17 @@ async def update():
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
 
                     async with async_session() as session:
-                        print((await session.execute(select(Speki).where(Speki.name == tit,Speki.date == full_date))).all().count())
+                        #print((await session.execute(select(Speki).where(Speki.name == tit,Speki.date == full_date))).all())
+                        print((await session.execute(select(Speki))).all().count())
+                        #if (await session.execute(select(Speki).where(Speki.name == tit,Speki.date == full_date))).all().count() == 0:
+                        #    spek = Speki(name = tit, date = full_date,info = info, weekday = weekday,
+                        #                 message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
+                        #                 month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
+                        #                 re.split("-|,|:|,| " , full_date)[3] +":"+ re.split("-|,|:|,| " , full_date)[4]+ "\n"
+                        #                 + info+" "+"\n"
+                        #                 )
+                        #    session.add(spek)
                         
-                        if (await session.execute(select(Speki).where(Speki.name == tit,Speki.date == full_date))).all().count() == 0:
-                            spek = Speki(name = tit, date = full_date,info = info, weekday = weekday,
-                                         message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
-                                         month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
-                                         re.split("-|,|:|,| " , full_date)[3] +":"+ re.split("-|,|:|,| " , full_date)[4]+ "\n"
-                                         + info+" "+"\n"
-                                         )
-                            session.add(spek)
-
                 except Exception as ex:
                     print(ex)
         except:
