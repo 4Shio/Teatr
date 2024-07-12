@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 from base import *
-from func import pages,symvols_to_delete,replace,date_rep,week_list,del_s,month_list
+from func import pages,symvols_to_delete,replace,week_list,del_s,month_list,date_repp,date_rep
 import re
 import asyncio
 async def update():
@@ -19,7 +19,7 @@ async def update():
                     timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
                     
                     full_date =date_rep(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0] + ':'+str(0)+str(0)))
-                    print(type(full_date))
+                    full_date_d = date_repp(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0] + ':'+str(0)+str(0)))
                     weekday =week_list.get(del_s(timesp.split(',')[1]))
                     
                     # Название
@@ -34,15 +34,15 @@ async def update():
                         
                         if result.first() == None:
                             print(None)
-                            spek = Speki(name = tit, date = full_date,info = info, weekday = weekday,
+                            spek = Speki(name = tit, date = full_date_d,info = info, weekday = weekday,
                                      message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
                                      month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
                                      re.split("-|,|:|,| " , full_date)[3] +":"+ re.split("-|,|:|,| " , full_date)[4]+ "\n"
                                      + info+" "+"\n"
                                      )
                             session.add(spek)
-                            #await session.commit()
-                        #print(result.first())
+                            await session.commit()
+                        
                         
                         
                             
