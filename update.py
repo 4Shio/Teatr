@@ -2,8 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 from base import *
 from func import pages,symvols_to_delete,replace,date_rep,week_list,del_s,month_list
-import time
-import re
+
 import asyncio
 async def update():
     print("Update begin")
@@ -27,25 +26,22 @@ async def update():
                     tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
                     # Длительность
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
-
+                    print(full_date)
                     async with async_session() as session:
-                        #print((await session.execute(select(Speki).where(Speki.name == tit,Speki.date == full_date))).all())
-                        print((await session.execute(select(Speki))).all().count())
-                        #if (await session.execute(select(Speki).where(Speki.name == tit,Speki.date == full_date))).all().count() == 0:
-                        #    spek = Speki(name = tit, date = full_date,info = info, weekday = weekday,
-                        #                 message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
-                        #                 month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
-                        #                 re.split("-|,|:|,| " , full_date)[3] +":"+ re.split("-|,|:|,| " , full_date)[4]+ "\n"
-                        #                 + info+" "+"\n"
-                        #                 )
-                        #    session.add(spek)
+                        stmt = select(Speki).where(Speki.name == tit,Speki.date == full_date)
+                        result =await session.execute(stmt)
+                        
+                        for a1 in result.scalars():
+                            print(a1)
+                        
+                        #print(result.all().count(result.all()))
                         
                 except Exception as ex:
+                    
                     print(ex)
         except:
             pass
         
-    await session.commit()
+    #await session.commit()
     print('Update complete')
     await asyncio.sleep(100)
-    
