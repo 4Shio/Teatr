@@ -1,8 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 from base import *
-from func import pages,symvols_to_delete,replace,date_rep,week_list,del_s,month_list,date_repp
-import time
+
+from func import pages,symvols_to_delete,replace,week_list,del_s,month_list,date_repp,date_rep
+
 import re
 import asyncio
 async def update():
@@ -19,30 +20,43 @@ async def update():
             
                     timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
                     
-                    full_date =date_repp(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0] + ':'+str(0)+str(0)))
-                    print(type(full_date))
+
+                    full_date =date_rep(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0] + ':'+str(0)+str(0)))
+                    full_date_d = date_repp(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0] + ':'+str(0)+str(0)))
+
                     weekday =week_list.get(del_s(timesp.split(',')[1]))
                     
                     # Название
                     tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
                     # Длительность
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
-
-                    if (session.query(Speki).filter_by(name = tit, date = full_date ,  weekday = weekday).count()) == 0:
-                        spek = Speki(name = tit, date = full_date,info = info, weekday = weekday,
+                    
+                    async with async_session() as session:
+                        stmt = select(Speki).where(Speki.name == tit and Speki.date == full_date)
+                        stmp = select(Speki)
+                        result =await session.execute(stmt)
+                        
+                        if result.first() == None:
+                            print(None)
+                            spek = Speki(name = tit, date = full_date_d,info = info, weekday = weekday,
                                      message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
                                      month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
                                      re.split("-|,|:|,| " , full_date)[3] +":"+ re.split("-|,|:|,| " , full_date)[4]+ "\n"
                                      + info+" "+"\n"
                                      )
-                        session.add(spek)
-
+                            session.add(spek)
+                            await session.commit()
+                        
+                        
+                        
+                            
+                        
                 except Exception as ex:
+                    
                     print(ex)
         except:
             pass
         
-    session.commit()
+    await session.commit()
     print('Update complete')
-    await asyncio.sleep(1000)
-    #time.sleep(1000)
+    await asyncio.sleep(100)
