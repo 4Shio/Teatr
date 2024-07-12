@@ -38,6 +38,7 @@ def replace(data):
     
 
 def date_repp(date):
+        #print((datetime.strptime((date),"%Y-%m-%d %H:%M:%S")))
         return datetime.strptime((date),"%Y-%m-%d %H:%M:%S")
               
 def date_rep(date):

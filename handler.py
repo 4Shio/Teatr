@@ -28,11 +28,11 @@ def make_more_str(text_str):
 
 
 
-
     
 @router.message(Command("start"))
 async def start(message:Message):
                 await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Все следующие","Следующий"]))
+
 
 @router.message(F.text == 'Все следующие')
 async def get_all(message_get_all:Message):
@@ -51,3 +51,4 @@ async def get_all(message_get_one:Message):
             #print(make_more_str(result.all()))
         await message_get_one.answer(text= make_str(result.first()))
    
+

@@ -1,7 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 from base import *
+
 from func import pages,symvols_to_delete,replace,week_list,del_s,month_list,date_repp,date_rep
+
 import re
 import asyncio
 async def update():
@@ -18,8 +20,10 @@ async def update():
             
                     timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
                     
+
                     full_date =date_rep(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0] + ':'+str(0)+str(0)))
                     full_date_d = date_repp(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0] + ':'+str(0)+str(0)))
+
                     weekday =week_list.get(del_s(timesp.split(',')[1]))
                     
                     # Название
