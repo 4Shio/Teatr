@@ -27,9 +27,10 @@ async def main() -> None:
         
         task1 = asyncio.create_task(update())
         task2 = asyncio.create_task(dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types()))
-        
+        task3 = asyncio.create_task(init_models())
         await task1
         await task2
+        await task3
     #try:
     #    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     #except Exception as ex_:
