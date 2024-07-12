@@ -10,8 +10,7 @@ import asyncio
 #async_engine = create_async_engine(url= asyncurl,echo = False)
 engine = create_async_engine(url= asyncurl,echo = False)
 async_session = async_sessionmaker(engine)
-#async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-#session = Session(engine)
+
 metadata = MetaData()
 
 
@@ -41,4 +40,3 @@ async def init_models():
         #await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
-asyncio.run(init_models())
