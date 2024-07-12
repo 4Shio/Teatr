@@ -37,7 +37,6 @@ async def update():
                         result =await session.execute(stmt)
                         
                         if result.first() == None:
-                            print(None)
                             spek = Speki(name = tit, date = full_date_d,info = info, weekday = weekday,
                                      message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
                                      month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
