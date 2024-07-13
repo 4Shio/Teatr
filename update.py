@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 from base import *
-
+from sqlalchemy import func
 from func import pages,symvols_to_delete,replace,week_list,del_s,month_list,date_repp,date_rep
 
 import re
@@ -32,11 +32,10 @@ async def update():
                     info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
                     
                     async with async_session() as session:
-                        stmt = select(Speki).where(Speki.name == tit and Speki.date == full_date)
-                        stmp = select(Speki)
-                        result =await session.execute(stmt)
-                        
-                        if result.first() == None:
+                        count = await session.execute(select(func.count(Speki.id)).where(Speki.date ==full_date_d))
+                        s_count = count.scalar()
+                        if s_count ==0:
+                            print('Null')
                             spek = Speki(name = tit, date = full_date_d,info = info, weekday = weekday,
                                      message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
                                      month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
@@ -45,6 +44,7 @@ async def update():
                                      )
                             session.add(spek)
                             await session.commit()
+                        
                         
                         
                         
