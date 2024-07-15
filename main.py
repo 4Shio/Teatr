@@ -14,26 +14,22 @@ from handler import *
 from update import update
 from threading import Thread
 
+bot = Bot(token)
+dp = Dispatcher(storage=MemoryStorage())
+dp.include_router(router) 
 
-async def main() -> None:
 
-    bot = Bot(token)
-    dp = Dispatcher(storage=MemoryStorage())
 
-    dp.include_router(router)    
-
-    while True:
-        
-        task1 = asyncio.create_task(update())
-        task2 = asyncio.create_task(dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types()))
-        await task1
-        await task2
-
-    #try:
-    #    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
-    #except Exception as ex_:
-    #    print("Error polling -> ", ex_)
-
+loop = asyncio.get_event_loop()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.ensure_future(update())
+        asyncio.ensure_future(dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types()))
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        print('Closing loop')
+        loop.close()
+    
