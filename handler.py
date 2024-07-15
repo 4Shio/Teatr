@@ -37,7 +37,8 @@ async def start(message:Message):
 @router.message(F.text == 'Все следующие')
 async def get_all(message_get_all:Message):
     async with async_session() as session:
-        stmt = select(Speki.message_text)
+        now = datetime.now()
+        stmt = select(Speki.message_text).where(Speki.date >now)
         result =await session.execute(stmt)
             #print(make_more_str(result.all()))
         await message_get_all.answer(text= make_more_str(result.all()))
@@ -46,7 +47,8 @@ async def get_all(message_get_all:Message):
 @router.message(F.text == 'Следующий')
 async def get_all(message_get_one:Message):
     async with async_session() as session:
-        stmt = select(Speki.message_text)
+        now = datetime.now()
+        stmt = select(Speki.message_text).where(Speki.date >now)
         result =await session.execute(stmt)
             #print(make_more_str(result.all()))
         await message_get_one.answer(text= make_str(result.first()))
