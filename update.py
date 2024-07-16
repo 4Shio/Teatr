@@ -6,6 +6,8 @@ from func import pages,symvols_to_delete,replace,week_list,del_s,month_list,date
 
 import re
 import asyncio
+from aiogram import Bot
+bot = Bot(token)
 async def update():
     while True:
         print("Update begin")
@@ -56,7 +58,12 @@ async def update():
                         print(ex)
             except:
                 pass
-            
+        
+        
+        stmt = select(user.t_id).where(user.role == 'Admin')
+        resul = await session.execute(stmt)
+        id = resul.scalar()
+        await bot.send_message(chat_id= id,text='Update complete')
         await session.commit()
         print('Update complete')
         await asyncio.sleep(1000)

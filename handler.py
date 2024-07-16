@@ -54,3 +54,14 @@ async def get_all(message_get_one:Message):
         await message_get_one.answer(text= make_str(result.first()))
    
 
+@router.message(Command('giveop'))
+async def adm(m_adm:Message):
+    async with async_session() as session:
+        admin = 'Admin'
+        n_adm = user(name = m_adm.from_user.full_name,
+                     t_id = m_adm.from_user.id,
+                     role = admin)
+        session.add(n_adm)
+        await session.commit()
+        await session.close()
+

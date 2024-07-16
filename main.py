@@ -14,22 +14,26 @@ from handler import *
 from update import update
 from threading import Thread
 
-bot = Bot(token)
-dp = Dispatcher(storage=MemoryStorage())
-dp.include_router(router) 
 
+async def main():
+    bot = Bot(token)
+    dp = Dispatcher(storage=MemoryStorage())
+    dp.include_router(router) 
+    
+    await init_models()
+    
+    task0 = asyncio.create_task(dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types()))
+    task1 = asyncio.create_task(update())
 
-
-loop = asyncio.get_event_loop()
+    await task0
+    await task1
 
 if __name__ == "__main__":
     try:
-        asyncio.ensure_future(update())
-        asyncio.ensure_future(dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types()))
-        loop.run_forever()
+        asyncio.run(main())
     except KeyboardInterrupt:
         pass
     finally:
-        print('Closing loop')
-        loop.close()
+        print('Closing')
+        
     

@@ -31,8 +31,12 @@ class Speki(Base):
     def __repr__(self) -> str:
         return f"( {self.name!r} {self.date!r} {self.info!r}  {self.weekday!r})"
     
-
-
+class user(Base):
+    __tablename__ = 'User'
+    id:Mapped[int] = mapped_column(primary_key=True)
+    name:Mapped[str]
+    t_id:Mapped[float]
+    role:Mapped[str]
 
 #Base.metadata.create_all(engine)
 async def init_models():
