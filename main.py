@@ -20,11 +20,11 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router) 
     
-    await init_models()
     
+    task01 = asyncio.create_task(init_models())
     task0 = asyncio.create_task(dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types()))
     task1 = asyncio.create_task(update())
-
+    await task01
     await task0
     await task1
 

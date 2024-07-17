@@ -40,9 +40,8 @@ async def get_all(message_get_all:Message):
         now = datetime.now()
         stmt = select(Speki.message_text).where(Speki.date >now)
         result =await session.execute(stmt)
-            #print(make_more_str(result.all()))
         await message_get_all.answer(text= make_more_str(result.all()))
-
+        
 
 @router.message(F.text == 'Следующий')
 async def get_all(message_get_one:Message):

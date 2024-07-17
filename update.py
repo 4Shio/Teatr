@@ -24,8 +24,9 @@ async def update():
                         timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
 
 
-                        full_date =date_rep(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0] + ':'+str(0)+str(0)))
-                        full_date_d = date_repp(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0] + ':'+str(0)+str(0)))
+                        full_date =date_rep(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0]))
+                        
+                        full_date_d = date_repp(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0]))
 
                         weekday =week_list.get(del_s(timesp.split(',')[1]))
 
@@ -39,6 +40,7 @@ async def update():
                             s_count = count.scalar()
                             if s_count ==0:
                                 
+                                
                                 spek = Speki(name = tit, date = full_date_d,info = info, weekday = weekday,
                                          message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
                                          month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
@@ -47,23 +49,18 @@ async def update():
                                          )
                                 session.add(spek)
                                 await session.commit()
-
-
-
-
-
-
                     except Exception as ex:
-
                         print(ex)
             except:
                 pass
         
-        
-        stmt = select(user.t_id).where(user.role == 'Admin')
-        resul = await session.execute(stmt)
-        id = resul.scalar()
-        await bot.send_message(chat_id= id,text='Update complete')
+        try:
+            stmt = select(user.t_id).where(user.role == 'Admin')
+            resul = await session.execute(stmt)
+            id = resul.scalar()
+            await bot.send_message(chat_id= id,text='Update complete')
+        except:
+            pass
         await session.commit()
         print('Update complete')
         await asyncio.sleep(1000)
