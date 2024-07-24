@@ -1,22 +1,13 @@
-from datetime import *
 import asyncio
 from aiogram import Bot, Dispatcher
-from aiogram.enums.parse_mode import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram import types, F, Router
-from aiogram.filters import Command
-from aiogram.fsm.state import StatesGroup, State
-from aiogram.fsm.context import FSMContext
-from sqlalchemy.orm import Mapped,mapped_column
-from base import *
-from config import *
-from handler import *
+from config import tg_token,init_models
+from handler import router
 from update import update
-from threading import Thread
 
 
 async def main():
-    bot = Bot(token)
+    bot = Bot(tg_token)
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router) 
     

@@ -1,21 +1,7 @@
-from typing import Any
-from sqlalchemy import URL,create_engine,text,Insert,MetaData,Table,Column,String,values,Integer,select,ForeignKey,ScalarResult
-from sqlalchemy.orm import Session,sessionmaker,DeclarativeBase,Mapped,mapped_column,relationship
+from sqlalchemy.orm import DeclarativeBase,Mapped,mapped_column,relationship
+from config import Base
+from datetime import datetime
 
-from config import *
-from datetime import*
-from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, AsyncSession, create_async_engine
-import asyncio
-
-#async_engine = create_async_engine(url= asyncurl,echo = False)
-engine = create_async_engine(url= asyncurl,echo = False)
-async_session = async_sessionmaker(engine)
-
-metadata = MetaData()
-
-
-class Base(AsyncAttrs,DeclarativeBase):
-    pass
 
 class Speki(Base):
     __tablename__ = "Speki"
@@ -38,9 +24,4 @@ class user(Base):
     t_id:Mapped[float]
     role:Mapped[str]
 
-#Base.metadata.create_all(engine)
-async def init_models():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
 

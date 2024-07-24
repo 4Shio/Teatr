@@ -1,13 +1,14 @@
 from bs4 import BeautifulSoup
 import requests
-from base import *
-from sqlalchemy import func
-from func import pages,symvols_to_delete,replace,week_list,del_s,month_list,date_repp,date_rep
-
+from base import Speki,user
+from sqlalchemy import func,select
+from func import pages,replace,week_list,del_s,month_list,date_repp,date_rep
+from datetime import datetime
 import re
 import asyncio
 from aiogram import Bot
-bot = Bot(token)
+from config import tg_token,async_session
+bot = Bot(tg_token)
 async def update():
     while True:
         print("Update begin")
@@ -37,10 +38,8 @@ async def update():
 
                         async with async_session() as session:
                             count = await session.execute(select(func.count(Speki.id)).where(Speki.date ==full_date_d))
-                            s_count = count.scalar()
+                            s_count = count.scalars()
                             if s_count ==0:
-                                
-                                
                                 spek = Speki(name = tit, date = full_date_d,info = info, weekday = weekday,
                                          message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
                                          month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
