@@ -1,7 +1,7 @@
 import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-from config import tg_token,init_models
+from config import tg_token,init_models,engine
 from handler import router
 from update import update
 
@@ -11,7 +11,7 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router) 
     
-    
+    print(engine)
     task01 = asyncio.create_task(init_models())
     task0 = asyncio.create_task(dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types()))
     task1 = asyncio.create_task(update())

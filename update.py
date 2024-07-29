@@ -38,7 +38,9 @@ async def update():
 
                         async with async_session() as session:
                             count = await session.execute(select(func.count(Speki.id)).where(Speki.date ==full_date_d))
-                            s_count = count.scalars()
+                            print()
+                            s_count = count.scalar()
+                            
                             if s_count ==0:
                                 spek = Speki(name = tit, date = full_date_d,info = info, weekday = weekday,
                                          message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
