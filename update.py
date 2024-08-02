@@ -33,12 +33,13 @@ async def update():
 
                         # Название
                         tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
+                    
                         # Длительность
                         info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
 
                         async with async_session() as session:
                             count = await session.execute(select(func.count(Speki.id)).where(Speki.date ==full_date_d))
-                            print()
+    
                             s_count = count.scalar()
                             
                             if s_count ==0:

@@ -3,12 +3,14 @@ from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from base import *
+from base import Speki,user
 from aiogram.types import ReplyKeyboardMarkup,ReplyKeyboardRemove,KeyboardButton
 from datetime import *
 from aiogram.fsm.state import StatesGroup, State
 from func import month_list,date_rep,date_repp
 import re
+from config import async_session
+from sqlalchemy import select
 now = datetime.now()
 
 router = Router()

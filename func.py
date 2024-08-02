@@ -29,8 +29,7 @@ symvols_to_delete = "/"
 
 space_del = " "
 
-pages = ["https://mrteatr.ru/afisha/", "https://mrteatr.ru/afisha/?page=2", "https://mrteatr.ru/afisha/?page=3",
-         "https://mrteatr.ru/afisha/?page=4"]
+pages = ["https://mrteatr.ru/afisha/?page=1", "https://mrteatr.ru/afisha/?page=2", "https://mrteatr.ru/afisha/?page=3"]
 
 def replace(data):
     for sym in symvols_to_delete:
