@@ -1,8 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
-from base import Speki,user
+from base import Speki
 from sqlalchemy import func,select
 from func import pages,replace,week_list,del_s,month_list,date_repp,date_rep
+from handler import make_str
 from datetime import datetime
 import re
 import asyncio
@@ -19,7 +20,15 @@ async def update():
                 spectacless = (soup.find_all(class_='AffichesItem_item__NUTcg'))
                 for iow, el in enumerate(spectacless):
                     try:
-                        # Число и дата
+
+                        try:
+                         
+                            if el.find(class_="AffichesItem_stage__W7j3k").text != None:
+                                continue
+                        except:pass
+
+
+                        #Число и дата
                         datesp= replace((str(el.find(class_='AffichesItem_date__tJDVL').text)))
 
                         timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
@@ -35,20 +44,25 @@ async def update():
                         tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
                     
                         # Длительность
-                        info = str(el.find(class_='AffichesItem_centerLeft__DYkLc').text)
-
+                        info = (el.find(class_='AffichesItem_centerLeft__DYkLc').text)
+    
                         async with async_session() as session:
-                            count = await session.execute(select(func.count(Speki.id)).where(Speki.date ==full_date_d))
+                            count = await session.execute(select(func.count(Speki.date)).where(Speki.date ==full_date_d and Speki.name ==tit))
     
                             s_count = count.scalar()
-                            
-                            if s_count ==0:
-                                spek = Speki(name = tit, date = full_date_d,info = info, weekday = weekday,
-                                         message_text = tit + "\n" + re.split("-|,|:|,| " , full_date)[2] +" " + 
-                                         month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
-                                         re.split("-|,|:|,| " , full_date)[3] +":"+ re.split("-|,|:|,| " , full_date)[4]+ "\n"
-                                         + info+" "+"\n"
-                                         )
+                        
+                            if s_count == 0:
+
+                                spek = Speki(name = tit, 
+                                             date = full_date_d,
+                                             info = info,
+                                             weekday = weekday,
+                                             message_text = tit + "\n" + 
+                                             re.split("-|,|:|,| " , full_date)[2] +" " + 
+                                             month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
+                                             re.split("-|,|:|,| " , full_date)[3] +":"+ re.split("-|,|:|,| " , full_date)[4]+ "\n"
+                                            + info+" "+"\n")
+                                         
                                 session.add(spek)
                                 await session.commit()
                     except Exception as ex:
@@ -56,13 +70,7 @@ async def update():
             except:
                 pass
         
-        try:
-            stmt = select(user.t_id).where(user.role == 'Admin')
-            resul = await session.execute(stmt)
-            id = resul.scalar()
-            await bot.send_message(chat_id= id,text='Update complete')
-        except:
-            pass
-        await session.commit()
+        
+        
         print('Update complete')
         await asyncio.sleep(1000)

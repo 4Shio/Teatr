@@ -10,7 +10,7 @@ from aiogram.fsm.state import StatesGroup, State
 from func import month_list,date_rep,date_repp
 import re
 from config import async_session
-from sqlalchemy import select
+from sqlalchemy import select,func
 now = datetime.now()
 
 router = Router()
@@ -40,7 +40,7 @@ async def start(message:Message):
 async def get_all(message_get_all:Message):
     async with async_session() as session:
         now = datetime.now()
-        stmt = select(Speki.message_text).where(Speki.date >now)
+        stmt = select(Speki.message_text).where(Speki.date >now).order_by(Speki.date)
         result =await session.execute(stmt)
         await message_get_all.answer(text= make_more_str(result.all()))
         
@@ -49,13 +49,13 @@ async def get_all(message_get_all:Message):
 async def get_all(message_get_one:Message):
     async with async_session() as session:
         now = datetime.now()
-        stmt = select(Speki.message_text).where(Speki.date >now)
-        result =await session.execute(stmt)
-            #print(make_more_str(result.all()))
-        await message_get_one.answer(text= make_str(result.first()))
+        stmt = select(Speki.message_text).where(Speki.date >now).order_by(Speki.date)
+        result =await session.scalar(stmt)
+            
+        await message_get_one.answer(text= result)
    
 
-@router.message(Command('giveop'))
+@router.message(Command('op'))
 async def adm(m_adm:Message):
     async with async_session() as session:
         admin = 'Admin'
