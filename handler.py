@@ -42,9 +42,10 @@ async def get_all(message_get_all:Message):
         now = datetime.now()
         stmt = select(Speki.message_text).where(Speki.date >now).order_by(Speki.date)
         result =await session.execute(stmt)
-        await message_get_all.answer(text= make_more_str(result.all()))
+        res = await session.scalars()
         
-
+        await message_get_all.answer(text= make_more_str(result.all()))
+       
 @router.message(F.text == 'Следующий')
 async def get_all(message_get_one:Message):
     async with async_session() as session:
