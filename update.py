@@ -3,13 +3,10 @@ import requests
 from base import Speki
 from sqlalchemy import func,select
 from func import pages,replace,week_list,del_s,month_list,date_repp,date_rep
-from handler import make_str
 from datetime import datetime
 import re
 import asyncio
-from aiogram import Bot
-from config import tg_token,async_session
-bot = Bot(tg_token)
+from config import async_session
 async def update():
     while True:
         print("Update begin")
@@ -18,42 +15,39 @@ async def update():
                 page = requests.get(i)
                 soup = BeautifulSoup(page.text, "html.parser")
                 spectacless = (soup.find_all(class_='AffichesItem_item__NUTcg'))
+            except Exception as ex:
+                print(ex)
                 for iow, el in enumerate(spectacless):
+    
                     try:
-
-                        try:
                          
-                            if el.find(class_="AffichesItem_stage__W7j3k").text != None:
-                                continue
-                        except:pass
+                        if el.find(class_="AffichesItem_stage__W7j3k").text != None:
+                            continue
+                    except:pass
 
+                    #Число и дата
+                    datesp= replace((str(el.find(class_='AffichesItem_date__tJDVL').text)))
 
-                        #Число и дата
-                        datesp= replace((str(el.find(class_='AffichesItem_date__tJDVL').text)))
+                    timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
 
-                        timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
-
-
-                        full_date =date_rep(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0]))
+                    full_date =date_rep(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0]))
                         
-                        full_date_d = date_repp(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0]))
+                    full_date_d = date_repp(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0]))
 
-                        weekday =week_list.get(del_s(timesp.split(',')[1]))
+                    weekday =week_list.get(del_s(timesp.split(',')[1]))
 
-                        # Название
-                        tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
+                    # Название
+                    tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
                     
-                        # Длительность
-                        info = (el.find(class_='AffichesItem_centerLeft__DYkLc').text)
+                    # Длительность
+                    info = (el.find(class_='AffichesItem_centerLeft__DYkLc').text)
     
-                        async with async_session() as session:
-                            count = await session.execute(select(func.count(Speki.date)).where(Speki.date ==full_date_d and Speki.name ==tit))
-    
-                            s_count = count.scalar()
-                        
-                            if s_count == 0:
+                    async with async_session() as session:
+                        count = await session.execute(select(func.count(Speki.date)).where(Speki.date ==full_date_d and Speki.name ==tit))
+                        s_count = count.scalar()
+                        if s_count == 0:
 
-                                spek = Speki(name = tit, 
+                            spek = Speki(name = tit, 
                                              date = full_date_d,
                                              info = info,
                                              weekday = weekday,
@@ -63,14 +57,8 @@ async def update():
                                              re.split("-|,|:|,| " , full_date)[3] +":"+ re.split("-|,|:|,| " , full_date)[4]+ "\n"
                                             + info+" "+"\n")
                                          
-                                session.add(spek)
-                                await session.commit()
-                    except Exception as ex:
-                        print(ex)
-            except:
-                pass
-        
-        
-        
+                            session.add(spek)
+                            await session.commit()
+                    
         print('Update complete')
         await asyncio.sleep(1000)
