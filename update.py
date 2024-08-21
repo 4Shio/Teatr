@@ -20,7 +20,6 @@ async def update():
                 for iow, el in enumerate(spectacless):
     
                     try:
-                         
                         if el.find(class_="AffichesItem_stage__W7j3k").text != None:
                             continue
                     except:pass
