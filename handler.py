@@ -7,8 +7,6 @@ from base import Speki,user
 from aiogram.types import ReplyKeyboardMarkup,ReplyKeyboardRemove,KeyboardButton
 from datetime import *
 from aiogram.fsm.state import StatesGroup, State
-from func import month_list,date_rep,date_repp
-import re
 from config import async_session
 from sqlalchemy import select,func
 now = datetime.now()

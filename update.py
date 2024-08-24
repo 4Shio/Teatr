@@ -60,4 +60,4 @@ async def update():
                             await session.commit()
                     
         print('Update complete')
-        await asyncio.sleep(1000)
+        await asyncio.sleep(100000)
