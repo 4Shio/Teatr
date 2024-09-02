@@ -11,18 +11,25 @@ async def update():
     while True:
         print("Update begin")
         for i in pages:
-            try:
+            
                 page = requests.get(i)
                 soup = BeautifulSoup(page.text, "html.parser")
                 spectacless = (soup.find_all(class_='AffichesItem_item__NUTcg'))
-            except Exception as ex:
-                print(ex)
+            
                 for iow, el in enumerate(spectacless):
-    
                     try:
-                        if el.find(class_="AffichesItem_stage__W7j3k").text != None:
-                            continue
-                    except:pass
+                        under_name = el.find(class_="AffichesItem_stage__W7j3k").text
+                        if under_name != None:
+                            if under_name == 'Открытие балетного сезона':
+                                pass
+                            elif under_name == 'Малая сцена':
+                                pass
+                            else:
+                                continue
+                        else:
+                            pass
+                    except:
+                        pass
 
                     #Число и дата
                     datesp= replace((str(el.find(class_='AffichesItem_date__tJDVL').text)))
