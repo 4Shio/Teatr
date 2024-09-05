@@ -20,6 +20,14 @@ async def mesager():
                     for i in id_tg:
                         print(i)
                         await bot.send_message(chat_id=i ,text='Time to work')
+                if datetime.now().weekday() == 0:
+                    stmts = select(Speki.name,Speki.date).where(Speki.date > datetime.now() and Speki.date< datetime.now() + timedelta(days=7))
+                    next_week = await session.scalars(stmts)
+                    users = await session.scalars(select(user.t_id).where(user.role == 'user' and user.note == True))
+                    for i in users:
+                        bot.send_message(chat_id=i,text = 'Full week work')
+                    
+                    pass
             await session.close()
         except Exception as ex:
             print(ex)
