@@ -57,11 +57,40 @@ async def get_all(message_get_one:Message):
 @router.message(Command('op'))
 async def adm(m_adm:Message):
     async with async_session() as session:
+        
         admin = 'Admin'
-        n_adm = user(name = m_adm.from_user.full_name,
-                     t_id = m_adm.from_user.id,
-                     role = admin)
-        session.add(n_adm)
+        stmt = select(func.count(user.t_id)).where(user.role == admin and user.t_id== m_adm.from_user.id)
+        chek = await session.scalar(stmt)
+        if chek ==0:
+            n_adm = user(name = m_adm.from_user.full_name,
+                         t_id = m_adm.from_user.id,
+                         role = admin,
+                         note = False)
+            session.add(n_adm)
+        else:print("Alredy in use")
         await session.commit()
         await session.close()
 
+@router.message(Command('not'))
+async def adm(m_not:Message):
+    async with async_session() as session:
+        
+        role = 'user'
+        stmt = select(func.count(user.id)).where(user.role == role and user.t_id == m_not.from_user.id == user.t_id)
+        chek = await session.scalar(stmt)
+        if chek ==0:
+            n_note = user(name = m_not.from_user.full_name,
+                         t_id = m_not.from_user.id,
+                         role = role,
+                         note = True)
+            session.add(n_note)
+            await session.commit()
+            await session.close()
+        else:
+            print("Alredy in use")
+            #stmt = select(user.note).where(user.t_id == m_not.from_user.id)
+            #note = await session.scalar(stmt)
+            #if note == True:
+            #    updater = select((user.note))
+        await session.commit()
+        await session.close()

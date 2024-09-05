@@ -3,7 +3,7 @@ from config import async_session
 from datetime import *
 from config import tg_token
 from aiogram import Bot
-from sqlalchemy import select,func
+from sqlalchemy import select,func,update
 bot = Bot(tg_token)
 
 async def mesager():
@@ -12,11 +12,15 @@ async def mesager():
                 stmt = select(Speki.date).order_by(Speki.date).where(Speki.date > datetime.now())
                 first_date = await session.scalar(stmt)
                 time_untill = first_date  - datetime.now()
+                
                 if time_untill == timedelta(days=1,hours=0):
                     print('Work')
-                    stmts = select(user.id)
-                    id_tg = await session.scalar(stmts)
-                    bot.send_message(chat_id=id_tg ,text='Time to work')
+                    stmts = select(user.t_id).where(user.note == True)
+                    id_tg = (await session.execute(stmts)).scalars()
+                    for i in id_tg:
+                        print(i)
+                        await bot.send_message(chat_id=i ,text='Time to work')
+            await session.close()
         except Exception as ex:
             print(ex)
             

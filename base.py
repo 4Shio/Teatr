@@ -23,5 +23,5 @@ class user(Base):
     name:Mapped[str]
     t_id:Mapped[float]
     role:Mapped[str]
-
+    note:Mapped[bool]
 
