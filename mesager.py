@@ -7,6 +7,7 @@ from sqlalchemy import select,func,update
 bot = Bot(tg_token)
 
 async def mesager():
+    while True:
         try:
             async with async_session() as session:
                 stmt = select(Speki.date).order_by(Speki.date).where(Speki.date > datetime.now())
@@ -20,7 +21,13 @@ async def mesager():
                     for i in id_tg:
                         print(i)
                         await bot.send_message(chat_id=i ,text='Time to work')
+                        
+                        
+                        
+                        
+                        
                 if datetime.now().weekday() == 0:
+                    
                     stmts = select(Speki.name,Speki.date).where(Speki.date > datetime.now() and Speki.date< datetime.now() + timedelta(days=7))
                     next_week = await session.scalars(stmts)
                     users = await session.scalars(select(user.t_id).where(user.role == 'user' and user.note == True))
