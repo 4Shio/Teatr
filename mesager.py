@@ -15,12 +15,14 @@ async def mesager():
                 time_untill = first_date  - datetime.now()
                 
                 if time_untill == timedelta(days=1,hours=0):
+                    
                     print('Work')
                     stmts = select(user.t_id).where(user.note == True)
                     id_tg = (await session.execute(stmts)).scalars()
                     for i in id_tg:
                         print(i)
                         await bot.send_message(chat_id=i ,text='Time to work')
+                    
                         
                         
                         
