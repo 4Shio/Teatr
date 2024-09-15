@@ -3,7 +3,7 @@ import requests
 from base import Speki
 from sqlalchemy import func,select
 from func import pages,replace,week_list,del_s,month_list,date_repp,date_rep
-from datetime import datetime
+from datetime import datetime,timedelta
 import re
 import asyncio
 from config import async_session
@@ -24,6 +24,8 @@ async def update():
                                 pass
                             elif under_name == 'Малая сцена':
                                 pass
+                            elif under_name == 'Открытие оперного сезона':
+                                pass
                             else:
                                 continue
                         else:
@@ -39,7 +41,10 @@ async def update():
                     full_date =date_rep(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0]))
                         
                     full_date_d = date_repp(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0]))
-
+                    
+                    if full_date_d < datetime.now():
+                        full_date_d = date_repp(( str(int(datetime.now().year)+1)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0]))
+                    
                     weekday =week_list.get(del_s(timesp.split(',')[1]))
 
                     # Название

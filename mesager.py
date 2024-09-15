@@ -5,11 +5,13 @@ from config import tg_token
 from aiogram import Bot
 from sqlalchemy import select,func,update
 from handler import make_more_str
+import asyncio
 bot = Bot(tg_token)
 
 
 
 async def mesager():
+    await asyncio.sleep(10)
     while True:
         try:
             
@@ -41,13 +43,22 @@ async def mesager():
                         
                 if datetime.now().weekday() == 0:
                     
-                    if monday_ckeck != datetime.now().date or monday_ckeck == None:
-                        monday_ckeck = datetime.now().date
+                    last_update = await session.scalar(select(notes.date).filter(notes.type == 'week').order_by(notes.date.desc))
+                    
+                        
+                        
+                    if last_update.date != datetime.now().date or last_update == None:
+                        last_up = notes(date = datetime.now(),type = 'week')
+                        await session.add(last_up)
+                        await session.commit()
+                        
+                        
+                        
                         next_week_speki = select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)
                         next_week = (await session.execute(next_week_speki)).all()
 
                         users = (await session.execute(select(user.t_id).where(user.note == True))).scalars()
-                        monday_ckeck = datetime.now().date
+                        
 
 
                         for i in users:
@@ -56,6 +67,7 @@ async def mesager():
                     pass
             await session.close()
         except Exception as ex:
+            await asyncio.sleep(100)
             print(ex)
             
             

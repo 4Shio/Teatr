@@ -25,3 +25,9 @@ class user(Base):
     role:Mapped[str]
     note:Mapped[bool]
 
+class notes(Base):
+    __tablename__ = 'Notes'
+    id:Mapped[int] = mapped_column(primary_key=True)
+    type:Mapped[str]
+    date:Mapped[datetime]
+    
