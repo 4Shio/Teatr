@@ -66,5 +66,5 @@ async def update():
                             session.add(spek)
                             await session.commit()
                     
-        print('Update complete')
+        print('Update complete', datetime.now())
         await asyncio.sleep(100000)
