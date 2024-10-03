@@ -9,9 +9,18 @@ import asyncio
 bot = Bot(tg_token)
 
 
+async def get_first_date():
+    async with async_session() as session:
+                stmt = select(Speki.date).order_by(Speki.date).where(Speki.date > datetime.now())
+                first_date = await session.scalar(stmt)
+    return first_date
+
+async def get_name_of_firt():
+    async with async_session() as session:
+        next_one = await session.scalar(select(Speki.message_text).filter(Speki.date > datetime.now()).order_by(Speki.date))        
+    return next_one
 
 async def mesager():
-    await asyncio.sleep(10)
     while True:
         try:
             
