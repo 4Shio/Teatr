@@ -20,7 +20,7 @@ async def get_name_of_firt():
         next_one = await session.scalar(select(Speki.message_text).filter(Speki.date > datetime.now()).order_by(Speki.date))        
     return next_one
 
-async def mesager():
+async def dayly_notes():
     while True:
         try:
             
@@ -49,9 +49,10 @@ async def mesager():
                     
                 
                 
-                        
+async def week_notes():
+    async with async_session() as session:
                 if datetime.now().weekday() == 0:
-                    
+                     
                     last_update = await session.scalar(select(notes.date).filter(notes.type == 'week').order_by(desc(notes.date)))
 
                     if  last_update == None or last_update.date() < datetime.now().date():
@@ -66,10 +67,7 @@ async def mesager():
                         session.add(last_up)
                         await session.commit()
                     
-            await session.close()
-        except Exception as ex:
-            print(ex)
-            await asyncio.sleep(100)
+     
             
             
             
