@@ -20,16 +20,20 @@ async def get_name_of_firt():
         next_one = await session.scalar(select(Speki.message_text).filter(Speki.date > datetime.now()).order_by(Speki.date))        
     return next_one
 
+async def get_users():
+    async with async_session() as session:
+        users = (await session.execute(select(user.t_id).where(user.note == True))).scalars()
+    return users
+
+
 async def dayly_notes():
     while True:
-        try:
-            
             async with async_session() as session:
                 
                 stmt = select(Speki.date).order_by(Speki.date).where(Speki.date > datetime.now())
                 first_date = await session.scalar(stmt)
                 next_one = await session.scalar(select(Speki.message_text).filter(Speki.date > datetime.now()).order_by(Speki.date))
-                users = (await session.execute(select(user.t_id).where(user.note == True))).scalars()
+                
                
                 if (datetime.now() + timedelta(days=1)).date() == first_date.date() and datetime.now().hour == 12 :
                                           
@@ -50,23 +54,22 @@ async def dayly_notes():
                 
                 
 async def week_notes():
-    async with async_session() as session:
-                if datetime.now().weekday() == 0:
-                     
-                    last_update = await session.scalar(select(notes.date).filter(notes.type == 'week').order_by(desc(notes.date)))
+    while True:
+        async with async_session() as session:
+            if datetime.now().weekday() == 0 and datetime.now().hour == 8:
 
-                    if  last_update == None or last_update.date() < datetime.now().date():
-                        
-                        next_week_speki = select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)
-                        next_week = (await session.execute(next_week_speki)).all()
-                        
-                        for i in users:
-                            await bot.send_message(chat_id=i,text =make_more_str(next_week))
+                users = get_users()
 
-                        last_up = notes(date = datetime.now(), type = 'week')
-                        session.add(last_up)
-                        await session.commit()
-                    
+                next_week_speki = select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)
+                next_week = (await session.execute(next_week_speki)).all()
+                try:
+                    for i in users:
+                        await bot.send_message(chat_id=i,text =make_more_str(next_week))
+                    last_up = notes(date = datetime.now(), type = 'week')
+                    session.add(last_up)
+                    await session.commit()
+                except Exception as ex:
+                    print(ex)
      
             
             
