@@ -30,6 +30,7 @@ async def dayly_notes():
     while True:
             async with async_session() as session:
                 
+                
                 stmt = select(Speki.date).order_by(Speki.date).where(Speki.date > datetime.now())
                 first_date = await session.scalar(stmt)
                 next_one = await session.scalar(select(Speki.message_text).filter(Speki.date > datetime.now()).order_by(Speki.date))
