@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+    bot:
+        container_name: teatr_bot
+        build:
+            context: .
+            dockerfile: Dockerfile
+        stop_signal: SIGINT
+        restart: on-failure
+        env_file: .env
+        depends_on:
+            - db
+            - db_migration
+        networks:
+            - backend
+    db:
+        container_name: teatr_bot_db
+        image: postgres:14-alpine
+        restart: on-failure
+        environment:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_NAME}
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        ports:
+            - 5432:5432
+        networks:
+            - backend
+    db_migration:
+        build: .
+        restart: on-failure
+        depends_on:
+            - db
+        env_file: .env
+        command: sh -c "python -m alembic upgrade head"
+        networks:
+            - backend
+
+volumes:
+    postgres-data:
+
+networks:
+    backend:
+        name: teatr_bot_backend
+        driver: bridge
