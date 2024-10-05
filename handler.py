@@ -9,6 +9,7 @@ from datetime import *
 from aiogram.fsm.state import StatesGroup, State
 from config import async_session
 from sqlalchemy import select,func
+
 now = datetime.now()
 
 router = Router()
@@ -94,3 +95,15 @@ async def adm(m_not:Message):
             #    updater = select((user.note))
         await session.commit()
         await session.close()
+
+@router.message(Command('get_users'))
+async def test_notes(test_not:Message):
+    async with async_session() as session:
+       users = (await session.execute(select(user.t_id).where(user.note == True))).scalars()
+        #users =  await get_users()
+    try:
+        for i in users:
+            print(i)
+            test_not.answer(text= str(i))
+    except Exception as ex:
+        print(ex)
