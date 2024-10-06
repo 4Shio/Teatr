@@ -31,26 +31,27 @@ async def today_notes():
             async with async_session() as session:
                 
                 first_date = await get_first_date()
-                next_one = await get_name_of_first()
-                
-                if datetime.now().date() == first_date.date() and datetime.now().hour() == 8:
+                if datetime.now().date() == first_date.date() and datetime.now().hour == 8:
+                    next_one = await get_name_of_first()
                     users = await get_users()
                     for i in users:
                         await bot.send_message(chat_id=i,text=next_one)
-            await asyncio.sleep(3500)           
+                    await asyncio.sleep(3500)           
                    
                    
 async def tommorow_notes():
     while True:
         async with async_session() as session:
             first_date = await get_first_date()
-            if (first_date.date() - timedelta(days=1)) == datetime.now().date() and datetime.now().hour() == 8:
+            
+            if (first_date.date() - timedelta(days=1)) == datetime.now().date() and datetime.now().hour == 8:
+                
                 users = await get_users()    
                 next_one = await get_name_of_first()   
                              
                 for i in users:
                     await bot.send_message(chat_id=i ,text = next_one)
-        await asyncio.sleep(3500)
+                await asyncio.sleep(3500)
                     
                     
                 
@@ -72,7 +73,7 @@ async def week_notes():
                     await session.commit()
                 except Exception as ex:
                     print(ex)
-        await asyncio.sleep(3500)
+            await asyncio.sleep(3500)
             
             
             
