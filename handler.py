@@ -44,7 +44,18 @@ async def get_all(message_get_all:Message):
         await message_get_all.answer(text= make_more_str(result.all()))
         await session.close()
         
+@router.message(F.text == "На неделю")
+async def get_week(message_wwek:Message):
+    async with async_session() as session:
+        stmt = select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)      
+        result =await session.execute(stmt)
         
+    
+        try:
+            await message_wwek.answer(make_more_str(result.all()))
+        except Exception as ex:
+            print(ex)
+
 @router.message(F.text == 'Следующий')
 async def get_all(message_get_one:Message):
     async with async_session() as session:
