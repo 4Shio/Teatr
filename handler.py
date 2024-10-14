@@ -25,10 +25,12 @@ def make_str(text_str):
 def make_more_str(text_str):
       return '\n'.join('  '.join(str(i) for i in v) for v in text_str)
 
-async def get_from_db(stmt):
+async def get_from_db(value,stmt):
     async with async_session() as session:
-        return await session.scalars(stmt)
-
+        if value == 'all':
+            return (await session.scalars(stmt)).all()
+        if value == 'one':
+            return (await session.scalar(stmt))
 
 
 
@@ -41,7 +43,7 @@ async def start(message:Message):
 @router.message(F.text == 'Все следующие')
 async def get_all(message_get_all:Message):
         
-    result = (await get_from_db(select(Speki.message_text).where(Speki.date > datetime.now()).order_by(Speki.date))).all()
+    result = (await get_from_db('all',select(Speki.message_text).where(Speki.date > datetime.now()).order_by(Speki.date)))
     await message_get_all.answer(text="\n".join(result))
       
      
@@ -49,14 +51,14 @@ async def get_all(message_get_all:Message):
 @router.message(F.text == "На неделю")
 async def get_week(message_wwek:Message):
         
-    result =(await get_from_db(select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date))).all()
+    result =(await get_from_db('all',select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)))
     await message_wwek.answer('\n'.join(result))
       
 
 @router.message(F.text == 'Следующий')
 async def get_all(message_get_one:Message):
     
-    result = (await get_from_db(select(Speki.message_text).where(Speki.date > datetime.now()).order_by(Speki.date))).one()
+    result = (await get_from_db('one',select(Speki.message_text).where(Speki.date > datetime.now()).order_by(Speki.date)))
     await message_get_one.answer(text= result)
         
    
