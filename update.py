@@ -11,8 +11,12 @@ async def update():
     while True:
         print("Update begin")
         async with async_session() as session:
-                deleleter  = delete(Speki).where(Speki.date > datetime.now())
-                await session.execute(deleleter)
+            
+            deleleter  = delete(Speki).where(Speki.date > datetime.now())
+            await session.execute(deleleter)
+            await session.commit()
+
+                
         for i in pages:
             
             page = requests.get(i)
@@ -22,12 +26,15 @@ async def update():
             for iow, el in enumerate(spectacless):
                 try:
                     under_name = el.find(class_="AffichesItem_stage__W7j3k").text
+                    
                     if under_name != None:
                         if under_name == 'Открытие балетного сезона':
                             pass
                         elif under_name == 'Малая сцена':
                             pass
                         elif under_name == 'Открытие оперного сезона':
+                            pass
+                        elif under_name == 'Фестиваль молодых звезд оперы «Опера Vita»':
                             pass
                         else:
                             continue
