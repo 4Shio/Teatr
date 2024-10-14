@@ -9,7 +9,6 @@ from datetime import *
 from aiogram.fsm.state import StatesGroup, State
 from config import async_session
 from sqlalchemy import select,func
-
 now = datetime.now()
 
 router = Router()
@@ -26,44 +25,40 @@ def make_str(text_str):
 def make_more_str(text_str):
       return '\n'.join('  '.join(str(i) for i in v) for v in text_str)
 
+async def get_from_db(stmt):
+    async with async_session() as session:
+        return await session.scalars(stmt)
+
 
 
 
     
 @router.message(Command("start"))
 async def start(message:Message):
-                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Все следующие","Следующий"]))
+                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Все следующие","Следующий","На неделю"]))
 
 
 @router.message(F.text == 'Все следующие')
 async def get_all(message_get_all:Message):
-    async with async_session() as session:
-        now = datetime.now()
-        stmt = select(Speki.message_text).where(Speki.date >now).order_by(Speki.date)
-        result =await session.execute(stmt)
-        await message_get_all.answer(text= make_more_str(result.all()))
-        await session.close()
+        
+    result = (await get_from_db(select(Speki.message_text).where(Speki.date > datetime.now()).order_by(Speki.date))).all()
+    await message_get_all.answer(text="\n".join(result))
+      
+     
         
 @router.message(F.text == "На неделю")
 async def get_week(message_wwek:Message):
-    async with async_session() as session:
-        stmt = select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)      
-        result =await session.execute(stmt)
         
-    
-        try:
-            await message_wwek.answer(make_more_str(result.all()))
-        except Exception as ex:
-            print(ex)
+    result =(await get_from_db(select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date))).all()
+    await message_wwek.answer('\n'.join(result))
+      
 
 @router.message(F.text == 'Следующий')
 async def get_all(message_get_one:Message):
-    async with async_session() as session:
-        now = datetime.now()
-        stmt = select(Speki.message_text).where(Speki.date >now).order_by(Speki.date)
-        result =await session.scalar(stmt)
-        await message_get_one.answer(text= result)
-        await session.close()
+    
+    result = (await get_from_db(select(Speki.message_text).where(Speki.date > datetime.now()).order_by(Speki.date))).one()
+    await message_get_one.answer(text= result)
+        
    
 
 @router.message(Command('op'))
@@ -87,23 +82,19 @@ async def adm(m_adm:Message):
 async def adm(m_not:Message):
     async with async_session() as session:
         
-        role = 'user'
-        stmt = select(func.count(user.id)).where(user.role == role and user.t_id == m_not.from_user.id == user.t_id)
-        chek = await session.scalar(stmt)
+        
+        chek = (await get_from_db(select(func.count(user.id)).where(user.role == 'user' and user.t_id == m_not.from_user.id == user.t_id))).all()
         if chek ==0:
             n_note = user(name = m_not.from_user.full_name,
                          t_id = m_not.from_user.id,
-                         role = role,
+                         role = 'user',
                          note = True)
             session.add(n_note)
             await session.commit()
             await session.close()
         else:
             print("Alredy in use")
-            #stmt = select(user.note).where(user.t_id == m_not.from_user.id)
-            #note = await session.scalar(stmt)
-            #if note == True:
-            #    updater = select((user.note))
+          
         await session.commit()
         await session.close()
 

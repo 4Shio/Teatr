@@ -1,4 +1,4 @@
-from base import user,Speki,notes
+from base import user,Speki
 from config import async_session
 from datetime import *
 from config import tg_token
@@ -25,56 +25,55 @@ async def get_users():
         users = (await session.execute(select(user.t_id).where(user.note == True))).scalars()
     return users
 
+async def get_from_db(stmt):
+    async with async_session() as session:
+        return await session.scalars(stmt)
 
 async def today_notes():
     while True:
-            async with async_session() as session:
-                
-                first_date = await get_first_date()
-                if datetime.now().date() == first_date.date() and datetime.now().hour == 8:
-                    next_one = await get_name_of_first()
-                    users = await get_users()
-                    for i in users:
-                        await bot.send_message(chat_id=i,text=next_one)
-                    await asyncio.sleep(3500)           
+
+         first_date = await get_first_date()
+         if datetime.now().date() == first_date.date() and datetime.now().hour == 8:
+             next_one = await get_name_of_first()
+             users = await get_users()
+             for i in users:
+                 await bot.send_message(chat_id=i,text=next_one)
+             await asyncio.sleep(3700)
                    
                    
 async def tommorow_notes():
     while True:
-        async with async_session() as session:
-            first_date = await get_first_date()
-            
-            if (first_date.date() - timedelta(days=1)) == datetime.now().date() and datetime.now().hour == 8:
-                
-                users = await get_users()    
-                next_one = await get_name_of_first()   
-                             
-                for i in users:
-                    await bot.send_message(chat_id=i ,text = next_one)
-                await asyncio.sleep(3500)
+
+        first_date = await get_first_date()
+
+        if (first_date.date() - timedelta(days=1)) == datetime.now().date() and datetime.now().hour == 8:
+
+            users = await get_users()
+            next_one = await get_name_of_first()
+
+            for i in users:
+                await bot.send_message(chat_id=i ,text = next_one)
+            await asyncio.sleep(3700)
                     
                     
                 
                 
 async def week_notes():
     while True:
-        async with async_session() as session:
-            if datetime.now().weekday() == 0 and datetime.now().hour == 8:
-
-                users = await get_users()
-
-                next_week_speki = select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)
-                next_week = (await session.execute(next_week_speki)).all()
-                try:
-                    for i in users:
-                        await bot.send_message(chat_id=i,text =make_more_str(next_week))
-                    last_up = notes(date = datetime.now(), type = 'week')
-                    session.add(last_up)
-                    await session.commit()
-                except Exception as ex:
-                    print(ex)
-            await asyncio.sleep(3500)
+        if datetime.now().weekday() == 0 and datetime.now().hour == 8:
             
+            users = await get_users()
+            next_week = (await get_from_db(select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date))).all()
+            
+           
+            try:
+                for i in users:
+                    await bot.send_message(chat_id=i,text =make_more_str(next_week))
+                
+            except Exception as ex:
+                print(ex)
+        await asyncio.sleep(3700)
+        
             
             
             
