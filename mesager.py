@@ -6,6 +6,7 @@ from aiogram import Bot
 from sqlalchemy import select,func,update,desc
 from handler import make_more_str
 import asyncio
+from func import month_list
 bot = Bot(tg_token)
 
 
@@ -13,21 +14,56 @@ async def get_first_date():
     async with async_session() as session:
                 stmt = select(Speki.date).order_by(Speki.date).where(Speki.date > datetime.now())
                 first_date = await session.scalar(stmt)
-    return first_date
+    return first_date                
+     
 
 async def get_name_of_first():
-    async with async_session() as session:
-        next_one = await session.scalar(select(Speki.message_text).filter(Speki.date > datetime.now()).order_by(Speki.date))        
-    return next_one
+    return await get_from_db('one',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date))
 
 async def get_users():
-    async with async_session() as session:
-        users = (await session.execute(select(user.t_id).where(user.note == True))).scalars()
-    return users
+    return  await get_from_db('all',select(user.t_id).where(user.note == True))
 
-async def get_from_db(stmt):
+
+async def get_from_db(value,stmt):
     async with async_session() as session:
-        return await session.scalars(stmt)
+        if value == 'all':
+            return (await session.scalars(stmt)).all()
+         
+        if value =='ones':
+            return (await session.execute(stmt)).scalar()
+        
+        if value == 'one':
+            messages =''
+            i = (await session.execute(stmt)).first()
+            messages = (messages + 
+                                str(i[0]) + #name
+                                "\n"  + str(i[1]) + #weekday
+                                ' ' + str(datetime.strftime(i[2],'%d')) + # Day
+                                " " + str(month_list.get(datetime.strftime(i[2],'%m')))  + #Month
+                                " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + #time
+                                str(i[3]) +'\n' +'\n') #Info           
+            return messages
+                
+        if value =="alle":
+            
+            return format((await session.execute(stmt)).all())
+        
+        
+def format(value):
+    messages =''
+    for el,i in enumerate(value):
+                try:
+                    messages = (messages + 
+                                str(i[0]) + #name
+                                "\n"  + str(i[1]) + #weekday
+                                ' ' + str(datetime.strftime(i[2],'%d')) + # Day
+                                " " + str(month_list.get(datetime.strftime(i[2],'%m')))  + #Month
+                                " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + #time
+                                str(i[3]) +'\n' +'\n') #Info
+                except Exception as ex:
+                    print(ex)
+    return messages
+
 
 async def today_notes():
     while True:
@@ -63,7 +99,7 @@ async def week_notes():
         if datetime.now().weekday() == 0 and datetime.now().hour == 8:
             
             users = await get_users()
-            next_week = (await get_from_db(select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date))).all()
+            next_week = (await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date))).all()
             
            
             try:
