@@ -3,8 +3,7 @@ import requests
 from base import Speki
 from sqlalchemy import func,select,delete
 from func import pages,replace,week_list,del_s,month_list,date_repp,date_rep
-from datetime import datetime,timedelta
-import re
+from datetime import datetime
 import asyncio
 from config import async_session
 async def update():
@@ -28,18 +27,11 @@ async def update():
                     under_name = el.find(class_="AffichesItem_stage__W7j3k").text
                     
                     if under_name != None:
-                        if under_name == 'Открытие балетного сезона':
+                        if under_name in ['Открытие балетного сезона','Малая сцена','Открытие оперного сезона','Фестиваль молодых звезд оперы «Опера Vita»']:
                             pass
-                        elif under_name == 'Малая сцена':
-                            pass
-                        elif under_name == 'Открытие оперного сезона':
-                            pass
-                        elif under_name == 'Фестиваль молодых звезд оперы «Опера Vita»':
-                            pass
+                        
                         else:
                             continue
-                    else:
-                        pass
                 except:
                     pass
                 #Число и дата
