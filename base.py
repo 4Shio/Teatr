@@ -11,7 +11,7 @@ class Speki(Base):
     date:Mapped[datetime]
     info:Mapped[str]
     weekday:Mapped[str]
-    message_text:Mapped[str]
+    
  
 
     def __repr__(self) -> str:
