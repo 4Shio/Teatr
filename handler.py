@@ -34,7 +34,13 @@ async def get_from_db(value,stmt):
         if value == 'one':
             messages =''
             i = (await session.execute(stmt)).first()
-            messages = messages +  str(i[0]) + "\n"  + str(i[1]) + ' ' + str(datetime.strftime(i[2],'%d'))+" " + str(month_list.get(datetime.strftime(i[2],'%m')))  + " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + str(i[3]) +'\n' +'\n'
+            messages = (messages + 
+                                str(i[0]) + #name
+                                "\n"  + str(i[1]) + #weekday
+                                ' ' + str(datetime.strftime(i[2],'%d')) + # Day
+                                " " + str(month_list.get(datetime.strftime(i[2],'%m')))  + #Month
+                                " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + #time
+                                str(i[3]) +'\n' +'\n') #Info           
             return messages
                 
         if value =="alle":
@@ -46,7 +52,13 @@ def format(value):
     messages =''
     for el,i in enumerate(value):
                 try:
-                    messages = messages +  str(i[0]) + "\n"  + str(i[1]) + ' ' + str(datetime.strftime(i[2],'%d'))+" " + str(month_list.get(datetime.strftime(i[2],'%m')))  + " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + str(i[3]) +'\n' +'\n'
+                    messages = (messages + 
+                                str(i[0]) + #name
+                                "\n"  + str(i[1]) + #weekday
+                                ' ' + str(datetime.strftime(i[2],'%d')) + # Day
+                                " " + str(month_list.get(datetime.strftime(i[2],'%m')))  + #Month
+                                " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + #time
+                                str(i[3]) +'\n' +'\n') #Info
                 except Exception as ex:
                     print(ex)
     return messages
