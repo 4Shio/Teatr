@@ -9,6 +9,7 @@ from datetime import *
 from aiogram.fsm.state import StatesGroup, State
 from config import async_session
 from sqlalchemy import select,func
+from func import month_list
 now = datetime.now()
 
 router = Router()
@@ -23,15 +24,33 @@ def make_str(text_str):
     return   ' '.join(str(i) for i in text_str )
 
 def make_more_str(text_str):
-      return '\n'.join('  '.join(str(i) for i in v) for v in text_str)
+      return '\n'.join(' \n'.join(str(i) for i in v) for v in text_str)
 
 async def get_from_db(value,stmt):
     async with async_session() as session:
         if value == 'all':
-            return (await session.scalars(stmt)).all()
+            return (await session.scalars(stmt)).all() 
+        
         if value == 'one':
-            return (await session.scalar(stmt))
-
+            messages =''
+            i = (await session.execute(stmt)).first()
+            messages = messages +  str(i[0]) + "\n"  + str(i[1]) + ' ' + str(datetime.strftime(i[2],'%d'))+" " + str(month_list.get(datetime.strftime(i[2],'%m')))  + " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + str(i[3]) +'\n' +'\n'
+            return messages
+                
+        if value =="alle":
+            
+            return format((await session.execute(stmt)).all())
+        
+        
+def format(value):
+    messages =''
+    for el,i in enumerate(value):
+                try:
+                    messages = messages +  str(i[0]) + "\n"  + str(i[1]) + ' ' + str(datetime.strftime(i[2],'%d'))+" " + str(month_list.get(datetime.strftime(i[2],'%m')))  + " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + str(i[3]) +'\n' +'\n'
+                except Exception as ex:
+                    print(ex)
+    return messages
+    
 
 
     
@@ -43,22 +62,21 @@ async def start(message:Message):
 @router.message(F.text == 'Все следующие')
 async def get_all(message_get_all:Message):
         
-    result = (await get_from_db('all',select(Speki.message_text).where(Speki.date > datetime.now()).order_by(Speki.date)))
-    await message_get_all.answer(text="\n".join(result))
-      
-     
-        
+    test = ((await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date))))
+    await message_get_all.answer(text=test)
+    
+    
 @router.message(F.text == "На неделю")
 async def get_week(message_wwek:Message):
         
-    result =(await get_from_db('all',select(Speki.message_text).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)))
-    await message_wwek.answer('\n'.join(result))
+    result =(await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)))
+    await message_wwek.answer(result)
       
 
 @router.message(F.text == 'Следующий')
 async def get_all(message_get_one:Message):
     
-    result = (await get_from_db('one',select(Speki.message_text).where(Speki.date > datetime.now()).order_by(Speki.date)))
+    result = (await get_from_db('one',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date)))
     await message_get_one.answer(text= result)
         
    
