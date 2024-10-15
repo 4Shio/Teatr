@@ -1,4 +1,4 @@
-FROM python:3.10.6-slim-buster as compile-image
+FROM python:3.11
 
 WORKDIR /app
 
