@@ -66,12 +66,7 @@ async def update():
                         spek = Speki(name = tit, 
                                          date = full_date_d,
                                          info = info,
-                                         weekday = weekday,
-                                         message_text = tit + "\n" + 
-                                         re.split("-|,|:|,| " , full_date)[2] +" " + 
-                                         month_list.get(re.split("-|,|:|,| " , full_date)[1]) + " " + weekday +" "+
-                                         re.split("-|,|:|,| " , full_date)[3] +":"+ re.split("-|,|:|,| " , full_date)[4]+ "\n"
-                                        + info+" "+"\n")
+                                         weekday = weekday)
                                      
                         session.add(spek)
                         await session.commit()
