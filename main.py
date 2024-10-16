@@ -4,7 +4,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from config import tg_token,init_models,engine
 from handler import router
 from update import update
-from mesager import week_notes,today_notes,tommorow_notes
+from notefications import week_notes,today_notes,tommorow_notes
 
 async def main():
     bot = Bot(tg_token)
@@ -23,7 +23,7 @@ async def main():
     await task1
     await task2
     await task3
-    await task4
+    await task4           
 if __name__ == "__main__":
     try:
         asyncio.run(main())

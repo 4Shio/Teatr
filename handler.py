@@ -8,7 +8,7 @@ from aiogram.types import ReplyKeyboardMarkup,ReplyKeyboardRemove,KeyboardButton
 from datetime import *
 from aiogram.fsm.state import StatesGroup, State
 from config import async_session
-from sqlalchemy import select,func
+from sqlalchemy import select,func,update
 from func import month_list
 now = datetime.now()
 

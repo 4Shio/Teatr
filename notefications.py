@@ -3,7 +3,7 @@ from config import async_session
 from datetime import *
 from config import tg_token
 from aiogram import Bot
-from sqlalchemy import select,func,update,desc
+from sqlalchemy import select
 from handler import format
 import asyncio
 from func import month_list
@@ -87,13 +87,9 @@ async def week_notes():
             users = await get_users()
             next_week = (await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date))).all()
             
-           
-            try:
-                for i in users:
-                    await bot.send_message(chat_id=i,text = next_week)
+            for i in users:
+                await bot.send_message(chat_id=i,text = next_week)
                 
-            except Exception as ex:
-                print(ex)
         await asyncio.sleep(3700)
         
             
