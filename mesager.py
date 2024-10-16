@@ -4,7 +4,7 @@ from datetime import *
 from config import tg_token
 from aiogram import Bot
 from sqlalchemy import select,func,update,desc
-from handler import make_more_str
+from handler import format
 import asyncio
 from func import month_list
 bot = Bot(tg_token)
@@ -49,20 +49,6 @@ async def get_from_db(value,stmt):
             return format((await session.execute(stmt)).all())
         
         
-def format(value):
-    messages =''
-    for el,i in enumerate(value):
-                try:
-                    messages = (messages + 
-                                str(i[0]) + #name
-                                "\n"  + str(i[1]) + #weekday
-                                ' ' + str(datetime.strftime(i[2],'%d')) + # Day
-                                " " + str(month_list.get(datetime.strftime(i[2],'%m')))  + #Month
-                                " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + #time
-                                str(i[3]) +'\n' +'\n') #Info
-                except Exception as ex:
-                    print(ex)
-    return messages
 
 
 async def today_notes():
@@ -104,7 +90,7 @@ async def week_notes():
            
             try:
                 for i in users:
-                    await bot.send_message(chat_id=i,text =make_more_str(next_week))
+                    await bot.send_message(chat_id=i,text = next_week)
                 
             except Exception as ex:
                 print(ex)

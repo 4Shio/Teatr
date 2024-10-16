@@ -32,6 +32,7 @@ async def get_from_db(value,stmt):
             return (await session.scalars(stmt)).all() 
         
         if value == 'one':
+            
             messages =''
             i = (await session.execute(stmt)).first()
             messages = (messages + 
@@ -50,7 +51,7 @@ async def get_from_db(value,stmt):
         
 def format(value):
     messages =''
-    for el,i in enumerate(value):
+    for i in value:
                 try:
                     messages = (messages + 
                                 str(i[0]) + #name
@@ -61,6 +62,7 @@ def format(value):
                                 str(i[3]) +'\n' +'\n') #Info
                 except Exception as ex:
                     print(ex)
+                    
     return messages
     
 

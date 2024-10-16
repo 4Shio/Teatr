@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 from base import Speki
 from sqlalchemy import func,select,delete
-from func import pages,replace,week_list,del_s,month_list,date_repp,date_rep
+from func import pages,replace,week_list,del_s,month_list,date_repp
 from datetime import datetime
 import asyncio
 from config import async_session
@@ -14,7 +14,6 @@ async def update():
             deleleter  = delete(Speki).where(Speki.date > datetime.now())
             await session.execute(deleleter)
             await session.commit()
-
                 
         for i in pages:
             
@@ -37,7 +36,6 @@ async def update():
                 #Число и дата
                 datesp= replace((str(el.find(class_='AffichesItem_date__tJDVL').text)))
                 timesp = str(el.find(class_='AffichesItem_time__Kffzs').text)
-                full_date =date_rep(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0]))
                     
                 full_date_d = date_repp(( str(datetime.now().year)  + "-" + datesp.split('-')[1] + '-' +datesp.split('-')[0] + " " + timesp.split(',')[0]))
                 
