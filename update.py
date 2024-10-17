@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 from base import Speki
 from sqlalchemy import func,select,delete
-from func import pages,replace,week_list,del_s,month_list,date_repp
+from func import pages,replace,week_list,del_s,date_repp
 from datetime import datetime
 import asyncio
 from config import async_session

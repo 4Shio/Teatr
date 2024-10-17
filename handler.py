@@ -10,6 +10,7 @@ from aiogram.fsm.state import StatesGroup, State
 from config import async_session
 from sqlalchemy import select,func,update
 from func import month_list
+import calendar
 now = datetime.now()
 
 router = Router()
@@ -70,7 +71,7 @@ def format(value):
     
 @router.message(Command("start"))
 async def start(message:Message):
-                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Все следующие","Следующий","На неделю"]))
+                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Все следующие","Следующий","На неделю",'На этот месяц']))
 
 
 @router.message(F.text == 'Все следующие')
@@ -92,9 +93,17 @@ async def get_all(message_get_one:Message):
     
     result = (await get_from_db('one',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date)))
     await message_get_one.answer(text= result)
-        
-   
-
+    
+@router.message(F.text == 'На этот месяц')
+async def get_month(message_month:Message):
+    last = calendar.monthrange(datetime.now().year, datetime.now().month)
+    last_day = datetime.now() + timedelta(days=(last[1] - int(datetime.now().day)))
+    
+    result =(await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= last_day).order_by(Speki.date)))
+    try:
+        await message_month.answer(result)   
+    except Exception as ex:
+        print(ex)
 @router.message(Command('op'))
 async def adm(m_adm:Message):
     async with async_session() as session:
@@ -117,7 +126,7 @@ async def adm(m_not:Message):
     async with async_session() as session:
         
         
-        chek = (await get_from_db(select(func.count(user.id)).where(user.role == 'user' and user.t_id == m_not.from_user.id == user.t_id))).all()
+        chek = (await get_from_db('all',select(func.count(user.id)).where(user.role == 'user' and user.t_id == m_not.from_user.id == user.t_id)))
         if chek ==0:
             n_note = user(name = m_not.from_user.full_name,
                          t_id = m_not.from_user.id,
