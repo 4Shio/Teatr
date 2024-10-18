@@ -138,7 +138,7 @@ async def adm(m_not:Message):
         
         
         chek = (await session.execute(select(func.count(user.id).filter(user.role == 'user').filter(user.t_id == m_not.from_user.id)))).scalar()
-        print(chek)
+
         if chek ==0:
             n_note = user(name = m_not.from_user.full_name,
                          t_id = m_not.from_user.id,
