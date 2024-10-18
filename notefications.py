@@ -52,6 +52,7 @@ async def get_from_db(value,stmt):
 
 
 async def today_notes():
+    await asyncio.sleep(10)
     while True:
 
          first_date = await get_first_date()
@@ -64,6 +65,7 @@ async def today_notes():
                    
                    
 async def tommorow_notes():
+    await asyncio.sleep(10)
     while True:
 
         first_date = await get_first_date()
@@ -81,6 +83,7 @@ async def tommorow_notes():
                 
                 
 async def week_notes():
+    await asyncio.sleep(10)
     while True:
         if datetime.now().weekday() == 0 and datetime.now().hour == 8:
             
