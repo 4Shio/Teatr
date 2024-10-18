@@ -9,7 +9,7 @@ from datetime import *
 from aiogram.fsm.state import StatesGroup, State
 from config import async_session
 from sqlalchemy import select,func,update
-from func import month_list
+from func import format
 import calendar
 now = datetime.now()
 
@@ -22,32 +22,6 @@ def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
 remove_key = ReplyKeyboardRemove()
 
 
-def format(value,type):
-    messages =''
-    if type == 'one':
-    
-        return  (messages + 
-                                str(value[0]) + #name
-                                "\n"  + str(value[1]) + #weekday
-                                ' ' + str(datetime.strftime(value[2],'%d')) + # Day
-                                " " + str(month_list.get(datetime.strftime(value[2],'%m')))  + #Month
-                                " " +  str(datetime.strftime(value[2],'%H:%M')) +"\n" + #time
-                                str(value[3]) +'\n' +'\n') #Info
-
-    else:
-        for i in value:
-                try:
-                    messages = (messages + 
-                                str(i[0]) + #name
-                                "\n"  + str(i[1]) + #weekday
-                                ' ' + str(datetime.strftime(i[2],'%d')) + # Day
-                                " " + str(month_list.get(datetime.strftime(i[2],'%m')))  + #Month
-                                " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + #time
-                                str(i[3]) +'\n' +'\n') #Info
-                except Exception as ex:
-                    print(ex)
-                    
-    return messages
 
 
 async def get_from_db(value,stmt,type):
@@ -92,6 +66,7 @@ async def get_week(message_wwek:Message):
     except Exception as ex:
         print(ex)
         await message_wwek.answer('В данный момент данная функция недоступна')
+        
 
 @router.message(F.text == 'Следующий')
 async def get_all(message_get_one:Message):
@@ -102,6 +77,7 @@ async def get_all(message_get_one:Message):
     except Exception as ex:
         print(ex)
         await message_get_one.answer('В данный момент данная функция недоступна')
+        
         
 @router.message(F.text == 'На этот месяц')
 async def get_month(message_month:Message):
@@ -114,6 +90,8 @@ async def get_month(message_month:Message):
     except Exception as ex:
         print(ex)
         await message_month.answer('В данный момент данная функция недоступна')
+        
+        
 @router.message(Command('op'))
 async def adm(m_adm:Message):
     async with async_session() as session:
@@ -131,6 +109,7 @@ async def adm(m_adm:Message):
         await m_adm.answer('Already in base')
         await session.commit()
         await session.close()
+        
 
 @router.message(Command('not'))
 async def adm(m_not:Message):

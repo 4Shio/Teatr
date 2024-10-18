@@ -47,3 +47,29 @@ def del_s(var):
         for i in space_del:
                 return var.replace(i,'')
         
+def format(value,type):
+    messages =''
+    if type == 'one':
+    
+        return  (messages + 
+                                str(value[0]) + #name
+                                "\n"  + str(value[1]) + #weekday
+                                ' ' + str(datetime.strftime(value[2],'%d')) + # Day
+                                " " + str(month_list.get(datetime.strftime(value[2],'%m')))  + #Month
+                                " " +  str(datetime.strftime(value[2],'%H:%M')) +"\n" + #time
+                                str(value[3]) +'\n' +'\n') #Info
+
+    else:
+        for i in value:
+                try:
+                    messages = (messages + 
+                                str(i[0]) + #name
+                                "\n"  + str(i[1]) + #weekday
+                                ' ' + str(datetime.strftime(i[2],'%d')) + # Day
+                                " " + str(month_list.get(datetime.strftime(i[2],'%m')))  + #Month
+                                " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + #time
+                                str(i[3]) +'\n' +'\n') #Info
+                except Exception as ex:
+                    print(ex)
+                    
+    return messages

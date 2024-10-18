@@ -4,7 +4,7 @@ from datetime import *
 from config import tg_token
 from aiogram import Bot
 from sqlalchemy import select
-from handler import format
+from  func import format
 import asyncio
 from func import month_list
 bot = Bot(tg_token)
