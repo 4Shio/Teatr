@@ -18,35 +18,24 @@ async def get_first_date():
      
 
 async def get_name_of_first():
-    return await get_from_db('one',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date))
+    return await get_from_db('one',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date),'None')
 
 async def get_users():
-    return  await get_from_db('all',select(user.t_id).where(user.note == True))
+    return  await get_from_db('all',select(user.t_id).where(user.note == True),'None')
 
-
-async def get_from_db(value,stmt):
+async def get_from_db(value,stmt,type):
     async with async_session() as session:
+        if type == None:
+            type = 'None'
         if value == 'all':
-            return (await session.scalars(stmt)).all()
-         
-        if value =='ones':
-            return (await session.execute(stmt)).scalar()
+            return (await session.scalars(stmt)).all() 
         
         if value == 'one':
-            messages =''
-            i = (await session.execute(stmt)).first()
-            messages = (messages + 
-                                str(i[0]) + #name
-                                "\n"  + str(i[1]) + #weekday
-                                ' ' + str(datetime.strftime(i[2],'%d')) + # Day
-                                " " + str(month_list.get(datetime.strftime(i[2],'%m')))  + #Month
-                                " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + #time
-                                str(i[3]) +'\n' +'\n') #Info           
-            return messages
+            return(format((await session.execute(stmt)).fetchone(),'one'))
                 
         if value =="alle":
             
-            return format((await session.execute(stmt)).all())
+            return format((await session.execute(stmt)).all(),type)
         
         
 
@@ -86,9 +75,8 @@ async def week_notes():
     await asyncio.sleep(10)
     while True:
         if datetime.now().weekday() == 0 and datetime.now().hour == 8:
-            
             users = await get_users()
-            next_week = (await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date))).all()
+            next_week = (await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date),'None'))
             
             for i in users:
                 await bot.send_message(chat_id=i,text = next_week)

@@ -52,6 +52,8 @@ def format(value,type):
 
 async def get_from_db(value,stmt,type):
     async with async_session() as session:
+        if type == None:
+            type = 'None'
         if value == 'all':
             return (await session.scalars(stmt)).all() 
         
@@ -135,7 +137,8 @@ async def adm(m_not:Message):
     async with async_session() as session:
         
         
-        chek = (await get_from_db('all',select(func.count(user.id)).where(user.role == 'user' and user.t_id == m_not.from_user.id == user.t_id)))
+        chek = (await session.execute(select(func.count(user.id).filter(user.role == 'user').filter(user.t_id == m_not.from_user.id)))).scalar()
+        print(chek)
         if chek ==0:
             n_note = user(name = m_not.from_user.full_name,
                          t_id = m_not.from_user.id,
