@@ -17,42 +17,25 @@ router = Router()
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
     row = [KeyboardButton(text=item) for item in items]
-    return ReplyKeyboardMarkup(keyboard=[row],one_time_keyboard = True)
+    return ReplyKeyboardMarkup(keyboard=[row],one_time_keyboard = True,resize_keyboard=True)
 
 remove_key = ReplyKeyboardRemove()
 
-def make_str(text_str):
-    return   ' '.join(str(i) for i in text_str )
 
-def make_more_str(text_str):
-      return '\n'.join(' \n'.join(str(i) for i in v) for v in text_str)
-
-async def get_from_db(value,stmt):
-    async with async_session() as session:
-        if value == 'all':
-            return (await session.scalars(stmt)).all() 
-        
-        if value == 'one':
-            
-            messages =''
-            i = (await session.execute(stmt)).first()
-            messages = (messages + 
-                                str(i[0]) + #name
-                                "\n"  + str(i[1]) + #weekday
-                                ' ' + str(datetime.strftime(i[2],'%d')) + # Day
-                                " " + str(month_list.get(datetime.strftime(i[2],'%m')))  + #Month
-                                " " +  str(datetime.strftime(i[2],'%H:%M')) +"\n" + #time
-                                str(i[3]) +'\n' +'\n') #Info           
-            return messages
-                
-        if value =="alle":
-            
-            return format((await session.execute(stmt)).all())
-        
-        
-def format(value):
+def format(value,type):
     messages =''
-    for i in value:
+    if type == 'one':
+    
+        return  (messages + 
+                                str(value[0]) + #name
+                                "\n"  + str(value[1]) + #weekday
+                                ' ' + str(datetime.strftime(value[2],'%d')) + # Day
+                                " " + str(month_list.get(datetime.strftime(value[2],'%m')))  + #Month
+                                " " +  str(datetime.strftime(value[2],'%H:%M')) +"\n" + #time
+                                str(value[3]) +'\n' +'\n') #Info
+
+    else:
+        for i in value:
                 try:
                     messages = (messages + 
                                 str(i[0]) + #name
@@ -65,45 +48,70 @@ def format(value):
                     print(ex)
                     
     return messages
-    
 
 
-    
+async def get_from_db(value,stmt,type):
+    async with async_session() as session:
+        if value == 'all':
+            return (await session.scalars(stmt)).all() 
+        
+        if value == 'one':
+            return(format((await session.execute(stmt)).fetchone(),'one'))
+                
+        if value =="alle":
+            
+            return format((await session.execute(stmt)).all(),type)
+
+
+
+
 @router.message(Command("start"))
 async def start(message:Message):
-                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Все следующие","Следующий","На неделю",'На этот месяц']))
+                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Следующий","На неделю",'На этот месяц',"Все следующие"]))
 
 
 @router.message(F.text == 'Все следующие')
 async def get_all(message_get_all:Message):
         
-    test = ((await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date))))
-    await message_get_all.answer(text=test)
-    
-    
+    test = ((await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date).limit(43),'None')))
+    try:
+        await message_get_all.answer(text=test)
+    except Exception as ex:
+        print(ex)
+        await message_get_all.answer('В данный момент эта функция недоступна')
+
+
 @router.message(F.text == "На неделю")
 async def get_week(message_wwek:Message):
-        
-    result =(await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)))
-    await message_wwek.answer(result)
-      
+
+    result =(await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date),'None'))
+    try:
+        await message_wwek.answer(result)
+    except Exception as ex:
+        print(ex)
+        await message_wwek.answer('В данный момент данная функция недоступна')
 
 @router.message(F.text == 'Следующий')
 async def get_all(message_get_one:Message):
     
-    result = (await get_from_db('one',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date)))
-    await message_get_one.answer(text= result)
-    
+    result = (await get_from_db('one',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date),'one'))
+    try:
+        await message_get_one.answer(text= result)
+    except Exception as ex:
+        print(ex)
+        await message_get_one.answer('В данный момент данная функция недоступна')
+        
 @router.message(F.text == 'На этот месяц')
 async def get_month(message_month:Message):
     last = calendar.monthrange(datetime.now().year, datetime.now().month)
     last_day = datetime.now() + timedelta(days=(last[1] - int(datetime.now().day)))
     
-    result =(await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= last_day).order_by(Speki.date)))
+    result =(await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= last_day).order_by(Speki.date),'None'))
     try:
         await message_month.answer(result)   
     except Exception as ex:
         print(ex)
+        await message_month.answer('В данный момент данная функция недоступна')
 @router.message(Command('op'))
 async def adm(m_adm:Message):
     async with async_session() as session:
@@ -118,6 +126,7 @@ async def adm(m_adm:Message):
                          note = False)
             session.add(n_adm)
         else:print("Alredy in use")
+        await m_adm.answer('Already in base')
         await session.commit()
         await session.close()
 
@@ -137,7 +146,7 @@ async def adm(m_not:Message):
             await session.close()
         else:
             print("Alredy in use")
-          
+            await m_not.answer('Already in base')
         await session.commit()
         await session.close()
 
@@ -145,7 +154,6 @@ async def adm(m_not:Message):
 async def test_notes(test_not:Message):
     async with async_session() as session:
        users = (await session.execute(select(user.t_id).where(user.note == True))).scalars()
-        #users =  await get_users()
     try:
         for i in users:
             print(i)
