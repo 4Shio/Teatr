@@ -25,8 +25,7 @@ async def get_users():
 
 async def get_from_db(value,stmt,type):
     async with async_session() as session:
-        if type == None:
-            type = 'None'
+        
         if value == 'all':
             return (await session.scalars(stmt)).all() 
         
