@@ -6,7 +6,7 @@ from aiogram import Bot
 from sqlalchemy import select
 from  func import format
 import asyncio
-from func import month_list
+
 bot = Bot(tg_token)
 
 
@@ -36,7 +36,6 @@ async def get_from_db(value,stmt,type):
         if value =="alle":
             
             return format((await session.execute(stmt)).all(),type)
-        
         
 
 
