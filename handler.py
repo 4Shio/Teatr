@@ -98,17 +98,19 @@ async def adm(m_adm:Message):
         
         admin = 'Admin'
         stmt = select(func.count(user.t_id)).where(user.role == admin and user.t_id== m_adm.from_user.id)
-        chek = await session.scalar(stmt)
+        chek = (await session.execute(stmt)).scalar()
+        print(chek)
         if chek ==0:
             n_adm = user(name = m_adm.from_user.full_name,
                          t_id = m_adm.from_user.id,
                          role = admin,
                          note = False)
             session.add(n_adm)
-        else:print("Alredy in use")
-        await m_adm.answer('Already in base')
-        await session.commit()
-        await session.close()
+            await session.commit()
+            await session.close()
+        else:
+            print("Alredy in use")
+            await m_adm.answer('Already in base')
         
 
 @router.message(Command('not'))
