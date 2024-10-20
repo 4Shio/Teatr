@@ -135,10 +135,14 @@ async def adm(m_not:Message):
 @router.message(Command('get_users'))
 async def test_notes(test_not:Message):
     async with async_session() as session:
-       users = (await session.execute(select(user.t_id).where(user.note == True))).scalars()
+       users = (await session.scalars(select(user.t_id).where(user.note == True))).all()
+       print(users)
     try:
+        print(' '.join(users))
+        test_not.answer(text= users)
         for i in users:
             print(i)
             test_not.answer(text= str(i))
     except Exception as ex:
         print(ex)
+    
