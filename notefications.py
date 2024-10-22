@@ -74,7 +74,7 @@ async def week_notes():
     while True:
         if datetime.now().weekday() == 0 and datetime.now().hour == 8:
             users = await get_users()
-            next_week = (await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date),'None'))
+            next_week = (await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=7))).order_by(Speki.date),'None'))
             
             for i in users:
                 await bot.send_message(chat_id=i,text = next_week)
