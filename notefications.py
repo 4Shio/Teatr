@@ -80,9 +80,3 @@ async def week_notes():
                 await bot.send_message(chat_id=i,text = next_week)
                 
         await asyncio.sleep(3700)
-        
-            
-            
-            
-            
-            
