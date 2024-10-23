@@ -18,24 +18,29 @@ async def get_first_date():
      
 
 async def get_name_of_first():
-    return await get_from_db('one',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date),'None')
+    return await get_from_db('all','scalar',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date))
+
 
 async def get_users():
     return  await get_from_db('all',select(user.t_id).where(user.note == True),'None')
 
-async def get_from_db(value,stmt,type):
+
+async def get_from_db(value,type,stmt):
     async with async_session() as session:
         
         if value == 'all':
-            return (await session.scalars(stmt)).all() 
-        
-        if value == 'one':
-            return(format((await session.execute(stmt)).fetchone(),'one'))
-                
-        if value =="alle":
+            if type =='scalar':
+                return (await session.scalars(stmt)).all() 
+            else:
+                return (await session.execute(stmt)).all()
             
-            return format((await session.execute(stmt)).all(),type)
-        
+        if value == 'one':
+            
+            if type == 'scalar':
+                return await session.scalar(stmt)
+            else:
+                return (await session.execute(stmt)).fetchone()
+                
 
 
 async def today_notes():
@@ -43,12 +48,18 @@ async def today_notes():
     while True:
 
          first_date = await get_first_date()
+         
          if datetime.now().date() == first_date.date() and datetime.now().hour == 8:
+             
              next_one = await get_name_of_first()
              users = await get_users()
+             
              for i in users:
+                 
                  await bot.send_message(chat_id=i,text=next_one)
+                 
              await asyncio.sleep(3700)
+             
                    
                    
 async def tommorow_notes():
@@ -74,7 +85,10 @@ async def week_notes():
     while True:
         if datetime.now().weekday() == 0 and datetime.now().hour == 8:
             users = await get_users()
-            next_week = (await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=7))).order_by(Speki.date),'None'))
+            not_format_result = await  get_from_db(select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=7))).order_by(Speki.date))
+            
+            next_week = format(not_format_result,'all')
+            #next_week = (await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=7))).order_by(Speki.date),'None'))
             
             for i in users:
                 await bot.send_message(chat_id=i,text = next_week)
