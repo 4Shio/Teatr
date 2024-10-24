@@ -45,7 +45,7 @@ async def get_from_db(value,type,stmt):
 
 @router.message(Command("start"))
 async def start(message:Message):
-                await message.answer(text='Приветсвую - это неофициальный бот музыкального театра для просмотра расписания',reply_markup=make_row_keyboard(["Следующий","На неделю",'На этот месяц',"Все следующие"]))
+                await message.answer(text=f'Приветствую {message.from_user.full_name}. \n Это бот для просмотра расписания Музыкального театра ',reply_markup=make_row_keyboard(["Следующий","На неделю",'На этот месяц',"Все следующие"]))
 
 
 @router.message(F.text == 'Все следующие')
