@@ -111,7 +111,7 @@ async def adm(m_adm:Message):
         admin = 'Admin'
         stmt = select(func.count(user.t_id)).where(user.role == admin and user.t_id== m_adm.from_user.id)
         chek = (await session.execute(stmt)).scalar()
-        print(chek)
+        
         if chek ==0:
             n_adm = user(name = m_adm.from_user.full_name,
                          t_id = m_adm.from_user.id,
