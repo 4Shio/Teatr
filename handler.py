@@ -24,20 +24,22 @@ remove_key = ReplyKeyboardRemove()
 
 
 
-async def get_from_db(value,stmt,type):
-    async with async_session() as session:
-        if type == None:
-            type = 'None'
-        if value == 'all':
-            return (await session.scalars(stmt)).all() 
-        
-        if value == 'one':
-            return(format((await session.execute(stmt)).fetchone(),'one'))
-                
-        if value =="alle":
-            
-            return format((await session.execute(stmt)).all(),type)
 
+async def get_from_db(value,type,stmt):
+    async with async_session() as session:
+        
+        if value == 'all':
+            if type =='scalar':
+                return (await session.scalars(stmt)).all() 
+            else:
+                return (await session.execute(stmt)).all()
+            
+        if value == 'one':
+            
+            if type == 'scalar':
+                return await session.scalar(stmt)
+            else:
+                return (await session.execute(stmt)).fetchone()
 
 
 
@@ -48,8 +50,10 @@ async def start(message:Message):
 
 @router.message(F.text == 'Все следующие')
 async def get_all(message_get_all:Message):
-        
-    test = ((await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date).limit(43),'None')))
+    
+    stmt = select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date).limit(43)
+    
+    test = format(await get_from_db('all','execute',stmt),'all')
     try:
         await message_get_all.answer(text=test)
     except Exception as ex:
@@ -59,21 +63,26 @@ async def get_all(message_get_all:Message):
 
 @router.message(F.text == "На неделю")
 async def get_week(message_wwek:Message):
-
-    result =(await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date),'None'))
+    
+    stmt = select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)
+    
+    test = format(await get_from_db('all','execute',stmt),'all')
     try:
-        await message_wwek.answer(result)
+        await message_wwek.answer(text=test)
     except Exception as ex:
         print(ex)
-        await message_wwek.answer('В данный момент данная функция недоступна')
+        await message_wwek.answer('В данный момент эта функция недоступна')
         
 
 @router.message(F.text == 'Следующий')
 async def get_all(message_get_one:Message):
     
-    result = (await get_from_db('one',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date),'one'))
+    stmt = select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date)
+    
+    test = format(await get_from_db('one','execute',stmt),'one')
+    
     try:
-        await message_get_one.answer(text= result)
+        await message_get_one.answer(text= test)
     except Exception as ex:
         print(ex)
         await message_get_one.answer('В данный момент данная функция недоступна')
@@ -81,10 +90,13 @@ async def get_all(message_get_one:Message):
         
 @router.message(F.text == 'На этот месяц')
 async def get_month(message_month:Message):
+    
     last = calendar.monthrange(datetime.now().year, datetime.now().month)
     last_day = datetime.now() + timedelta(days=(last[1] - int(datetime.now().day)))
     
-    result =(await get_from_db('alle',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= last_day).order_by(Speki.date),'None'))
+    stmt = select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= last_day).order_by(Speki.date)
+    
+    result = format(await get_from_db('all','execute',stmt),'all')
     try:
         await message_month.answer(result)   
     except Exception as ex:

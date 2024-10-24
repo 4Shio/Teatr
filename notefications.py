@@ -22,7 +22,7 @@ async def get_name_of_first():
 
 
 async def get_users():
-    return  await get_from_db('all',select(user.t_id).where(user.note == True),'None')
+    return  await get_from_db('all','scalar',select(user.t_id).where(user.note == True))
 
 
 async def get_from_db(value,type,stmt):
