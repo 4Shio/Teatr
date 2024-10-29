@@ -129,12 +129,14 @@ async def adm(m_adm:Message):
 async def adm(m_not:Message):
     async with async_session() as session:
         
-        
-        chek = (await session.execute(select(func.count(user.id).filter(user.role == 'user').filter(user.t_id == m_not.from_user.id)))).scalar()
+        print(m_not.chat.id)
+        print(m_not.message_id)
+        print(m_not.from_user.id)
+        chek = (await session.execute(select(func.count(user.id).filter(user.role == 'user').filter(user.t_id == m_not.chat.id)))).scalar()
 
         if chek ==0:
             n_note = user(name = m_not.from_user.full_name,
-                         t_id = m_not.from_user.id,
+                         t_id = m_not.chat.id,
                          role = 'user',
                          note = True)
             session.add(n_note)
@@ -145,6 +147,7 @@ async def adm(m_not:Message):
             await m_not.answer('Already in base')
         await session.commit()
         await session.close()
+
 
 @router.message(Command('get_users'))
 async def test_notes(test_not:Message):
