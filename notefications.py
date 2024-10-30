@@ -18,8 +18,11 @@ async def get_first_date():
      
 
 async def get_name_of_first():
-    return await get_from_db('all','scalar',select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date))
+    stmt = select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date)
 
+    test = format(await get_from_db('one','execute',stmt),'one')
+        
+    return  test
 
 async def get_users():
     return  await get_from_db('all','scalar',select(user.t_id).where(user.note == True))
