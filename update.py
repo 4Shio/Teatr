@@ -48,7 +48,14 @@ async def update():
                 
                 # Длительность
                 info = (el.find(class_='AffichesItem_centerLeft__DYkLc').text)
-
+                try:
+                    tickets = (el.find(class_='AffichesItem_button__3H66N')).text 
+                    
+                except Exception as ex:
+                    tickets = (el.find(class_='AffichesItem_buttonDisabled__rA_Vl')).text
+                    info = info + '\n'+ 'АНШЛАГ'
+                    
+                    
                 async with async_session() as session:
                     count = await session.execute(select(func.count(Speki.date)).where(Speki.date ==full_date_d and Speki.name ==tit))
                     s_count = count.scalar()
