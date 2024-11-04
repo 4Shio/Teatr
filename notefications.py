@@ -52,7 +52,7 @@ async def today_notes():
 
          first_date = await get_first_date()
          
-         if datetime.now().date() == first_date.date() and datetime.now().hour == 8:
+         if datetime.now().date() == first_date.date() and datetime.now().hour == 8 and datetime.now().weekday() !=0:
              
              next_one = await get_name_of_first()
              users = await get_users()
