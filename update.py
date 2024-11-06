@@ -46,6 +46,8 @@ async def update():
                 # Название
                 tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
                 
+                if tit == 'Знакомство с театром':
+                    continue
                 # Длительность
                 info = (el.find(class_='AffichesItem_centerLeft__DYkLc').text)
                 try:
