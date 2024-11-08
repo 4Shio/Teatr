@@ -59,7 +59,7 @@ async def today_notes():
              
              for i in users:
                  
-                 await bot.send_message(chat_id=i,text=next_one)
+                 await bot.send_message(chat_id=i,text= 'Сегодня' + '\n' + next_one)
                  
              await asyncio.sleep(3700)
              
