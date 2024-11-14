@@ -61,7 +61,7 @@ async def today_notes():
                  
                  await bot.send_message(chat_id=i,text= 'Сегодня' + '\n' + next_one)
                  
-        if  datetime.now() == first_date.date() and datetime.now().hour == (first_date.hour - timedelta(hours= 2)):
+        if  datetime.now().date() == first_date.date() and datetime.now().hour == (first_date.hour - timedelta(hours= 2)):
             next_one = await get_name_of_first()
             users = await get_users()
              
