@@ -54,13 +54,14 @@ async def today_notes():
         
         if datetime.now().date() == first_date.date() and datetime.now().hour == 8 and datetime.now().weekday() !=0:
              
-             next_one = await get_name_of_first()
-             users = await get_users()
-             
-             for i in users:
-                 
+            next_one = await get_name_of_first()
+            users = await get_users()
+            
+            for i in users:
+                
                  await bot.send_message(chat_id=i,text= 'Сегодня' + '\n' + next_one)
-                 
+            await asyncio.sleep(3700)
+            
         if  datetime.now().date() == first_date.date() and datetime.now().hour == (first_date.hour - timedelta(hours= 2)):
             next_one = await get_name_of_first()
             users = await get_users()
@@ -68,7 +69,7 @@ async def today_notes():
             for i in users:
                  
                  await bot.send_message(chat_id=i,text= 'Сегодня' + '\n' + next_one)
-        await asyncio.sleep(3700)
+            await asyncio.sleep(3700)
              
                    
                    
