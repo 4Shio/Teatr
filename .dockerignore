@@ -7,7 +7,7 @@ README.md
 
 *.mo
 
-.env
+
 .env.dev
 .env.dev.example
 .env.example

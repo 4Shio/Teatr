@@ -9,7 +9,7 @@ from datetime import *
 from aiogram.fsm.state import StatesGroup, State
 from config import async_session
 from sqlalchemy import select,func,update
-from func import format
+from func import format,date_repp
 import calendar
 now = datetime.now()
 
@@ -93,9 +93,13 @@ async def get_month(message_month:Message):
     
     last = calendar.monthrange(datetime.now().year, datetime.now().month)
     last_day = datetime.now() + timedelta(days=(last[1] - int(datetime.now().day)))
+    last_day = str(last_day.date()) +' '+'23:59'
+    last_day = date_repp(last_day)
+    
     
     stmt = select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= last_day).order_by(Speki.date)
-    
+  
+                                   
     result = format(await get_from_db('all','execute',stmt),'all')
     try:
         await message_month.answer(result)   

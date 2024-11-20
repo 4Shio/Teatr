@@ -59,16 +59,16 @@ async def update():
                     
                     
                 async with async_session() as session:
-                    count = await session.execute(select(func.count(Speki.date)).where(Speki.date ==full_date_d and Speki.name ==tit))
-                    s_count = count.scalar()
-                    if s_count == 0:
-                        spek = Speki(name = tit, 
-                                         date = full_date_d,
-                                         info = info,
-                                         weekday = weekday)
-                                     
-                        session.add(spek)
-                        await session.commit()
-                    
+                    #count = await session.execute(select(func.count(Speki.date)).where(Speki.date ==full_date_d and Speki.name ==tit))
+                    #s_count = count.scalar()
+                    #if s_count == 0:
+                    spek = Speki(name = tit, 
+                                     date = full_date_d,
+                                     info = info,
+                                     weekday = weekday)
+                                 
+                    session.add(spek)
+                    await session.commit()
+                
         print('Update complete', datetime.now())
         await asyncio.sleep(100000)

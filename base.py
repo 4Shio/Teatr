@@ -11,7 +11,7 @@ class Speki(Base):
     date:Mapped[datetime]
     info:Mapped[str]
     weekday:Mapped[str]
-    
+    type:Mapped[str] = mapped_column(default='default',nullable=False)
  
 
     def __repr__(self) -> str:
