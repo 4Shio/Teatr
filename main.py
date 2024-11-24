@@ -1,7 +1,7 @@
 import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-from config import tg_token,init_models,engine
+from config import tg_token,init_models                           
 from handler import router
 from update import update
 from notefications import week_notes,today_notes,tommorow_notes
