@@ -167,3 +167,9 @@ async def test_notes(test_not:Message):
     except Exception as ex:
         print(ex)
     
+    
+@router.message(Command('add'))
+async def add_rent():
+    
+    
+    pass
