@@ -6,15 +6,17 @@ from func import pages,replace,week_list,del_s,date_repp
 from datetime import datetime
 import asyncio
 from config import async_session
+import re
 async def update():
     while True:
         print("Update begin")
         async with async_session() as session:
-            
-            deleleter  = delete(Speki).where(Speki.date > datetime.now())
-            await session.execute(deleleter)
-            await session.commit()
-                
+            try:
+                deleleter  = delete(Speki).where(Speki.date > datetime.now())
+                await session.execute(deleleter)
+                await session.commit()
+            except Exception as ex:
+                print(ex)                
         for i in pages:
             
             page = requests.get(i)
@@ -47,21 +49,35 @@ async def update():
                 tit = str(el.find(class_='AffichesItem_title__1rN_h').text)
                 
                 if tit == 'Знакомство с театром':
+                    
                     continue
+                
+                
+                for i in tit.split():
+                    #print(i)
+                    if i == "Гастроли": 
+                        tit = "Гастроли"
+                        break
+                if tit == "Гастроли":
+                    continue
+                
+                        
+                    
+                
                 # Длительность
                 info = (el.find(class_='AffichesItem_centerLeft__DYkLc').text)
+            
                 try:
+                    
                     tickets = (el.find(class_='AffichesItem_button__3H66N')).text 
                     
-                except Exception as ex:
+                except :
                     tickets = (el.find(class_='AffichesItem_buttonDisabled__rA_Vl')).text
                     info = info + '\n'+ 'АНШЛАГ'
-                    
+                
                     
                 async with async_session() as session:
-                    #count = await session.execute(select(func.count(Speki.date)).where(Speki.date ==full_date_d and Speki.name ==tit))
-                    #s_count = count.scalar()
-                    #if s_count == 0:
+                    
                     spek = Speki(name = tit, 
                                      date = full_date_d,
                                      info = info,
@@ -70,5 +86,5 @@ async def update():
                     session.add(spek)
                     await session.commit()
                 
-        print('Update complete', datetime.now())
+        print(f"Update complete  {datetime.now().date()} {datetime.now().hour}:{datetime.now().minute}")
         await asyncio.sleep(100000)

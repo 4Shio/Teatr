@@ -64,7 +64,7 @@ async def get_all(message_get_all:Message):
 @router.message(F.text == "На неделю")
 async def get_week(message_wwek:Message):
     
-    stmt = select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=6))).order_by(Speki.date)
+    stmt = select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=7))).order_by(Speki.date)
     
     test = format(await get_from_db('all','execute',stmt),'all')
     try:
@@ -133,9 +133,7 @@ async def adm(m_adm:Message):
 async def adm(m_not:Message):
     async with async_session() as session:
         
-        print(m_not.chat.id)
-        print(m_not.message_id)
-        print(m_not.from_user.id)
+        
         chek = (await session.execute(select(func.count(user.id).filter(user.role == 'user').filter(user.t_id == m_not.chat.id)))).scalar()
 
         if chek ==0:
@@ -146,9 +144,17 @@ async def adm(m_not:Message):
             session.add(n_note)
             await session.commit()
             await session.close()
+            await m_not.answer(text="Notifications are enabled")
+            
         else:
-            print("Alredy in use")
-            await m_not.answer('Already in base')
+            stmt = select(user.note).where(user.t_id == m_not.chat.id)
+            note_chek = await session.scalar(stmt)
+            if note_chek == False:
+                stmt = update(user).where(user.t_id == m_not.chat.id).values(note = True)
+                await session.execute(stmt)
+                await m_not.answer(text='Notifications are enabled')
+            else:
+               await m_not.answer(text='Notifications are already enabled')
         await session.commit()
         await session.close()
 
@@ -156,16 +162,12 @@ async def adm(m_not:Message):
 @router.message(Command('get_users'))
 async def test_notes(test_not:Message):
     async with async_session() as session:
-       users = (await session.scalars(select(user.t_id).where(user.note == True))).all()
-       print(users)
-    try:
-        print(' '.join(users))
-        test_not.answer(text= users)
-        for i in users:
-            print(i)
-            test_not.answer(text= str(i))
-    except Exception as ex:
-        print(ex)
+        try:
+            answeer = await get_from_db('all','scalar',select(user.name).where(user.note == True))
+            print(answeer)
+            await test_not.answer(text= ''.join(answeer))
+        except Exception as ex:
+            print(ex)
     
     
 @router.message(Command('add'))
@@ -173,3 +175,11 @@ async def add_rent():
     
     
     pass
+
+@router.message(Command('del'))
+async def del_not(del_mes:Message):
+    stmt = update(user).where(user.t_id == del_mes.chat.id).values(note = False)
+    async with async_session() as session:
+        await session.execute(stmt)
+        await session.commit()
+        await del_mes.answer(text='Notifications are disabled')
