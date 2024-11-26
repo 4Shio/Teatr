@@ -179,6 +179,10 @@ async def add_rent():
 @router.message(Command('del'))
 async def del_not(del_mes:Message):
     stmt = update(user).where(user.t_id == del_mes.chat.id).values(note = False)
+    print(del_mes.chat.type)
+    
+    #private
+    #group
     async with async_session() as session:
         await session.execute(stmt)
         await session.commit()
