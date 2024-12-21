@@ -17,7 +17,7 @@ router = Router()
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
     row = [KeyboardButton(text=item) for item in items]
-    return ReplyKeyboardMarkup(keyboard=[row],one_time_keyboard = True,resize_keyboard=True)
+    return ReplyKeyboardMarkup(keyboard=[row],one_time_keyboard = False,resize_keyboard=True)
 
 remove_key = ReplyKeyboardRemove()
 
