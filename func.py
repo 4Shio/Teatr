@@ -47,10 +47,10 @@ def del_s(var):
         for i in space_del:
                 return var.replace(i,'')
         
-def format(value,type):
+def format(value):
     messages =''
-    if type == 'one':
-    
+    try:
+        
         return  (messages + 
                                 str(value[0]) + #name
                                 "\n"  + str(value[1]) + #weekday
@@ -59,10 +59,12 @@ def format(value,type):
                                 " " +  str(datetime.strftime(value[2],'%H:%M')) +"\n" + #time
                                 str(value[3]) +'\n' +'\n') #Info
 
-    else:
+    except :
+        
         for i in value:
                 try:
-                    messages = (messages + 
+                        
+                        messages = (messages + 
                                 str(i[0]) + #name
                                 "\n"  + str(i[1]) + #weekday
                                 ' ' + str(datetime.strftime(i[2],'%d')) + # Day

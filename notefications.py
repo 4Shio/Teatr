@@ -18,31 +18,21 @@ async def get_first_date():
      
 
 async def get_name_of_first():
-    stmt = select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date)
+    async with async_session() as session:
+        stmt = select(Speki.name,Speki.weekday,Speki.date,Speki.info).where(Speki.date > datetime.now()).order_by(Speki.date)
 
-    test = format(await get_from_db('one','execute',stmt),'one')
-        
-    return  test
+        test = await session.scalar(stmt)
+
+    return  format(test)
 
 async def get_users():
-    return  await get_from_db('all','scalar',select(user.t_id).where(user.note == True))
-
-
-async def get_from_db(value,type,stmt):
     async with async_session() as session:
         
-        if value == 'all':
-            if type =='scalar':
-                return (await session.scalars(stmt)).all() 
-            else:
-                return (await session.execute(stmt)).all()
-            
-        if value == 'one':
-            
-            if type == 'scalar':
-                return await session.scalar(stmt)
-            else:
-                return (await session.execute(stmt)).fetchone()
+        stmt = select(user.t_id).where(user.note == True)
+        users = await  session.scalars(stmt)
+    return  users
+
+
                 
 
 
@@ -92,17 +82,20 @@ async def tommorow_notes():
                 
                 
 async def week_notes():
-    await asyncio.sleep(20)
-    while True:
+    async with async_session() as session:
         
-        if datetime.now().weekday() == 0 and datetime.now().hour == 8:
-            users = await get_users()
-            not_format_result = await  get_from_db('all','execute',select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=7))).order_by(Speki.date))
-            
-            next_week = format(not_format_result,'all')
-            
-            for i in users:
-                await bot.send_message(chat_id=i,text = next_week)
-                
-            await asyncio.sleep(3700)
-        await asyncio.sleep(10)
+        await asyncio.sleep(20)
+        while True:
+
+            if datetime.now().weekday() == 0 and datetime.now().hour == 8:
+                users = await get_users()
+                stmt = select(Speki.name,Speki.weekday,Speki.date,Speki.info).filter(Speki.date > datetime.now()).filter(Speki.date <= (datetime.now() + timedelta(days=7))).order_by(Speki.date)
+                not_format_result = (await session.execute(stmt)).all()
+
+                next_week = format(not_format_result)
+
+                for i in users:
+                    await bot.send_message(chat_id=i,text = next_week)
+
+                await asyncio.sleep(3700)
+            await asyncio.sleep(10)
