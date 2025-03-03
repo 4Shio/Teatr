@@ -150,8 +150,8 @@ async def adm(m_not:Message):
 async def test_notes(test_not:Message):
     async with async_session() as session:
         try:
-            answeer = await get_from_db('all','scalar',select(user.name).where(user.note == True))
-            print(answeer)
+            answeer = await select(user.name).where(user.note == True)
+            
             await test_not.answer(text= ''.join(answeer))
         except Exception as ex:
             print(ex)
