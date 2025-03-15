@@ -1,3 +1,4 @@
+from email.policy import default
 from sqlalchemy.orm import Mapped,mapped_column
 from config import Base
 from datetime import datetime
@@ -24,5 +25,7 @@ class user(Base):
     t_id:Mapped[float]
     role:Mapped[str]
     note:Mapped[bool]
+    type:Mapped[str] = mapped_column(default='watcher')
+    
 
     
