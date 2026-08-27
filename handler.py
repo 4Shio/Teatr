@@ -26,8 +26,12 @@ remove_key = ReplyKeyboardRemove()
 
 @router.message(Command("start"))
 async def start(message:Message):
+    try:
                 await message.answer(text=f'Приветствую {message.from_user.full_name}. \n Это бот для просмотра расписания Музыкального театра ',reply_markup=make_row_keyboard(["Следующий","На неделю",'На этот месяц',"Все следующие"]))
-
+    except Exception as ex:
+                print('Ошибка')
+                
+                           
 
 @router.message(F.text == 'Все следующие')
 async def get_all(message_get_all:Message):

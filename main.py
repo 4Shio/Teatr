@@ -1,3 +1,5 @@
+import truststore
+truststore.inject_into_ssl()
 import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -5,9 +7,12 @@ from config import tg_token,init_models
 from handler import router
 from update import update
 from notefications import week_notes,today_notes,tommorow_notes
+from aiogram.client.session.aiohttp import AiohttpSession
 
 async def main():
-    bot = Bot(tg_token)
+    
+    session = AiohttpSession(proxy="socks5://127.0.0.1:10808")
+    bot = Bot(tg_token,session=session)
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(router) 
     
@@ -21,9 +26,9 @@ async def main():
     await task01
     await task0
     await task1
-    await task2
-    await task3
-    await task4           
+    #await task2
+    #await task3
+    #await task4           
 if __name__ == "__main__":
     try:
         asyncio.run(main())
